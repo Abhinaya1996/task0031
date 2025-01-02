@@ -24,17 +24,17 @@ const Header = ({ toggleSidebar }) => {
     }
     
     const menuItems = [
-        { key: '1', label: <a href="/">My Account</a> },
-        { key: '2', label: <a href="/">Lock Screen</a> },
+        { key: '1', label: <a href="/dashboard">My Account</a> },
+        { key: '2', label: <a href="/dashboard">Lock Screen</a> },
         { type: 'divider' },
-        { key: '3', label: <a href="/">Logout</a> },
+        { key: '3', label: <a href="/dashboard">Logout</a> },
     ];
 
     const hotelsList = [
-        { key: '1', label: <a href="/">Hotel 1</a> },
-        { key: '2', label: <a href="/">Hotel 2</a> },
-        { key: '3', label: <a href="/">Hotel 3</a> },
-        { key: '4', label: <a href="/">Hotel 4</a> },
+        { key: '1', label: <a href="/dashboard">Hotel 1</a> },
+        { key: '2', label: <a href="/dashboard">Hotel 2</a> },
+        { key: '3', label: <a href="/dashboard">Hotel 3</a> },
+        { key: '4', label: <a href="/dashboard">Hotel 4</a> },
     ];
 
     const notifyItems = [
