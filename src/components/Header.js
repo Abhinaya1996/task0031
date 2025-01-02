@@ -57,7 +57,7 @@ const Header = ({ toggleSidebar }) => {
         {
             key: '2',
             label: (
-                <a href="#" className="dropdown-item notify-item text-muted link-primary active">
+                <a href="/dashboard" className="dropdown-item notify-item text-muted link-primary active"> 
                     <div className="d-flex align-items-center justify-content-between">
                         <p className="notify-details">Notification Title</p>
                         <small className="text-muted">5 min ago</small>
@@ -90,10 +90,7 @@ const Header = ({ toggleSidebar }) => {
 
                             <li className="dropdown notification-list topbar-dropdown">
                                 <Dropdown menu={{ items: notifyItems }} trigger={['hover']}>
-                                    <a
-                                        className="nav-link dropdown-toggle nav-user me-0"
-                                        onClick={(e) => e.preventDefault()}
-                                    >
+                                    <span className="nav-link dropdown-toggle nav-user me-0" onClick={(e) => e.preventDefault()}>
                                         <Badge
                                             style={{ marginRight: '10px', padding:'0px 3px' }}
                                             count={15}
@@ -110,7 +107,7 @@ const Header = ({ toggleSidebar }) => {
                                                 }}
                                             />
                                         </Badge>
-                                    </a>
+                                    </span>
                                 </Dropdown>
                             </li>
 
@@ -135,7 +132,7 @@ const Header = ({ toggleSidebar }) => {
 
                             <li className="dropdown notification-list topbar-dropdown">
                                 <Dropdown menu={{ items: menuItems }} trigger={['click']}>
-                                    <a
+                                    <span
                                     className="nav-link dropdown-toggle nav-user me-0"
                                     style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', lineHeight: 'normal' }}
                                     onClick={(e) => e.preventDefault()}
@@ -150,7 +147,7 @@ const Header = ({ toggleSidebar }) => {
                                         </span>
                                     </div>
                                     <DownOutlined style={{ marginLeft: '8px', alignSelf: 'center' }} />
-                                    </a>
+                                    </span>
                                 </Dropdown>
                             </li>
                         </ul>
