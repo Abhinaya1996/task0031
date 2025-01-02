@@ -1,0 +1,18 @@
+/* Default: Visible on larger devices */
+.mob-hide {
+    display: block;
+  }
+.sys-hide{
+  display: none !important;
+}
+  
+  /* Media query: Hide on devices with a max width of 768px (mobile screens) */
+  @media (max-width: 768px) {
+    .mob-hide {
+      display: none !important;
+    }
+    .sys-hide{
+      display: block !important;
+    }
+  }
+  
