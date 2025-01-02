@@ -124,16 +124,16 @@ export default function Reservation(){
 
                                     <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                         <Row >
-                                            <p className="fs-16 text-warning fw-semibold pt-2">Check In Detail</p>
+                                            <p className="fs-16 text-warning fw-semibold pt-2">Check Out Detail</p>
                                         </Row>
                                         <Row>
-                                            <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 pt-2">
+                                            <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 mob-pad-2">
                                                 <input type="text" className="form-control" placeholder="Check-In Date" />
                                             </Col>
-                                            <Col xs={24} sm={24} md={4} lg={4} xl={4} className="pe-2 pt-2">
+                                            <Col xs={24} sm={24} md={4} lg={4} xl={4} className="pe-2 mob-pad-2">
                                             <input type="text" className="form-control" placeholder="Time" />
                                             </Col>
-                                            <Col xs={24} sm={24} md={4} lg={4} xl={4} className="pe-2 pt-2">
+                                            <Col xs={24} sm={24} md={4} lg={4} xl={4} className="pe-2 mob-pad-2">
                                                 <select className="form-select" id="example-select">
                                                     <option>AM</option>
                                                     <option>PM</option>
@@ -147,10 +147,10 @@ export default function Reservation(){
                                             <p className="fs-16 text-warning fw-semibold pt-2">C-Form Number</p>
                                         </Row>
                                         <Row>
-                                            <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 pt-2">
+                                            <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 mob-pad-2">
                                                 <input type="text" className="form-control" placeholder="325214" />
                                             </Col>
-                                            <Col xs={24} sm={24} md={8} lg={8} xl={8} className="pe-2 pt-2">
+                                            <Col xs={24} sm={24} md={8} lg={8} xl={8} className="pe-2 mob-pad-2">
                                             <p style={{color:'#32c833',padding:'5px 5px',}} className="fw-semibold">Opened</p>
                                             </Col>
                                         </Row>
@@ -213,10 +213,10 @@ export default function Reservation(){
                                             <p className="fs-16 text-warning fw-semibold pt-2">Additional Charges :</p>
                                         </Row>
                                         <Row>
-                                            <Col xs={8} sm={8} md={3} lg={3} xl={3} className="pe-2 pt-2">
+                                            <Col xs={8} sm={8} md={3} lg={3} xl={3} className="pe-2 mob-pad-2">
                                                 <input type="text" className="form-control" placeholder="500" />
                                             </Col>
-                                            <Col xs={14} sm={14} md={6} lg={6} xl={6} className="pe-2 pt-2">
+                                            <Col xs={14} sm={14} md={6} lg={6} xl={6} className="pe-2 mob-pad-2">
                                                 <input type="text" className="form-control" placeholder="500" />
                                             </Col>
                                         </Row>

@@ -5,6 +5,9 @@
 .sys-hide{
   display: none !important;
 }
+.mob-pad-2{
+  padding-top: 0 !important;
+}
   
   /* Media query: Hide on devices with a max width of 768px (mobile screens) */
   @media (max-width: 768px) {
@@ -13,6 +16,9 @@
     }
     .sys-hide{
       display: block !important;
+    }
+    .mob-pad-2{
+      padding-top: .6rem !important;
     }
   }
   
