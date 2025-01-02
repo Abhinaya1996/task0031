@@ -115,7 +115,7 @@ const Header = ({ toggleSidebar }) => {
 
                         <ul className="list-unstyled topnav-menu mb-0 d-flex align-items-center mob-hide">
                             <li>
-                            <Dropdown menu={menu} trigger={["hover"]} >
+                            <Dropdown overlay={menu} trigger={["hover"]} >
                                 <button type="button" className="btn btn-warning rounded-pill me-2">Select Hotel</button>
                             </Dropdown>
                             </li>
