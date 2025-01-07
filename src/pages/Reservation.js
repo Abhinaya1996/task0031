@@ -181,9 +181,8 @@ export default function Reservation(){
                                         <Row>
                                             <Col xs={24} sm={24} md={12} lg={12} xl={12} className="pe-2 pt-2">
                                                 <select className="form-select" id="example-select">
-                                                    <option value="IN">Indian</option>
-                                                    <option value="US">American</option>
-                                                    <option value="CA">Canadian</option>
+                                                    <option value="IND">Indian</option>
+                                                    <option value="NRI">Non-Indian</option>
                                                 </select>
                                             </Col>
                                             <Col xs={24} sm={24} md={12} lg={12} xl={12} className="pe-2 pt-2">

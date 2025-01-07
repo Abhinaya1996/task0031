@@ -27,14 +27,14 @@ const Header = ({ toggleSidebar }) => {
         { key: '1', label: <a href="/dashboard">My Account</a> },
         { key: '2', label: <a href="/dashboard">Lock Screen</a> },
         { type: 'divider' },
-        { key: '3', label: <a href="/dashboard">Logout</a> },
+        { key: '3', label: <a href="/login">Logout</a> },
     ];
 
     const hotelsList = [
-        { key: '1', label: <a href="/dashboard">Hotel 1</a> },
-        { key: '2', label: <a href="/dashboard">Hotel 2</a> },
-        { key: '3', label: <a href="/dashboard">Hotel 3</a> },
-        { key: '4', label: <a href="/dashboard">Hotel 4</a> },
+        { key: '1', label: <p>MAAG</p> },
+        { key: '2', label: <p>MAAR</p> },
+        { key: '3', label: <p>MAAS</p> },
+        { key: '4', label: <p>MAA</p> },
     ];
 
     const notifyItems = [
@@ -120,7 +120,7 @@ const Header = ({ toggleSidebar }) => {
                             </Dropdown>
                             </li>
                             <li>
-                            <button type="button" className="btn rounded-pill" style={{display: visible ? 'block' : 'none', backgroundColor: hovered ? "#f32d2f" : "#c0e4aa", color: "white",transition: "background-color 0.3s ease",}} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} >New Booking</button>
+                            <a href='/new-booking' className="btn rounded-pill" style={{display: visible ? 'block' : 'none', backgroundColor: hovered ? "#f32d2f" : "#c0e4aa", color: "white",transition: "background-color 0.3s ease",}} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} >New Booking</a>
                             </li>
                         </ul>
 

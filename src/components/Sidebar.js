@@ -44,7 +44,7 @@ const Sidebar = ({ isSidebarVisible }) => {
             <div id="sidebar-menu" className={sidebarbg}>
 
                 <div className="logo-box">
-                    <a className='logo logo-light' href='index.html'>
+                    <a className='logo logo-light' href='/'>
                         <span className="logo-sm">
                             <h3 style={{marginTop:'20px'}}>MAA</h3>
                         </span>
@@ -52,7 +52,7 @@ const Sidebar = ({ isSidebarVisible }) => {
                             <h3 style={{marginTop:'20px'}}>MAA1 Admin</h3>
                         </span>
                     </a>
-                    <a className='logo logo-dark' href='index.html'>
+                    <a className='logo logo-dark' href='/'>
                         <span className="logo-sm">
                             <h3 style={{marginTop:'20px'}}>MAA</h3>
                         </span>
