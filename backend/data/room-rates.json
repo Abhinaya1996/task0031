@@ -1,0 +1,393 @@
+{
+    "Sheet1":[
+     null,
+     {
+      "MAA RESIDENCY": "ROOM NO",
+      "Column2": "RATE",
+      "Column3": "TAX",
+      "Column4": "TOTAL",
+      "Column5": "ROOM TYPE"
+     },
+     {
+      "MAA RESIDENCY": 101,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 102,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 103,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 104,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 105,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 201,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 202,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 203,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 204,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 301,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 302,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 303,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 304,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 305,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 306,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 307,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 308,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 309,
+      "Column2": 1700,
+      "Column3": 204,
+      "Column4": 1904,
+      "Column5": "DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 401,
+      "Column2": 2000,
+      "Column3": 240,
+      "Column4": 2240,
+      "Column5": "DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 402,
+      "Column2": 2000,
+      "Column3": 240,
+      "Column4": 2240,
+      "Column5": "DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 403,
+      "Column2": 2000,
+      "Column3": 240,
+      "Column4": 2240,
+      "Column5": "DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 404,
+      "Column2": 2000,
+      "Column3": 240,
+      "Column4": 2240,
+      "Column5": "DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 405,
+      "Column2": 2000,
+      "Column3": 240,
+      "Column4": 2240,
+      "Column5": "DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 406,
+      "Column2": 2000,
+      "Column3": 240,
+      "Column4": 2240,
+      "Column5": "DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 111,
+      "Column2": 3200,
+      "Column3": 384,
+      "Column4": 3584,
+      "Column5": "TRIBLE BED KICHEN(SUITE ROOM)"
+     },
+     null,
+     {
+      "MAA RESIDENCY": "MAA GRAND"
+     },
+     null,
+     {
+      "MAA RESIDENCY": "ROOM NO",
+      "Column2": "RATE",
+      "Column3": "TAX",
+      "Column4": "TOTAL",
+      "Column5": "ROOM TYPE"
+     },
+     {
+      "MAA RESIDENCY": 601,
+      "Column2": 2500,
+      "Column3": 300,
+      "Column4": 2800,
+      "Column5": "PREMIUM DOUBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 602,
+      "Column2": 2800,
+      "Column3": 336,
+      "Column4": 3136,
+      "Column5": "PREMIUM DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 603,
+      "Column2": 2800,
+      "Column3": 336,
+      "Column4": 3136,
+      "Column5": "PREMIUM DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 604,
+      "Column2": 2800,
+      "Column3": 336,
+      "Column4": 3136,
+      "Column5": "PREMIUM DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 701,
+      "Column2": 3800,
+      "Column3": 456,
+      "Column4": 4256,
+      "Column5": "PREMIUM FOUR BED WITHOUT KICHEN"
+     },
+     {
+      "MAA RESIDENCY": 702,
+      "Column2": 3800,
+      "Column3": 456,
+      "Column4": 4256,
+      "Column5": "PREMIUM FOUR BED WITHOUT KICHEN"
+     },
+     {
+      "MAA RESIDENCY": 703,
+      "Column2": 3800,
+      "Column3": 456,
+      "Column4": 4256,
+      "Column5": "PREMIUM FOUR BED WITHOUT KICHEN"
+     },
+     {
+      "MAA RESIDENCY": 704,
+      "Column2": 4200,
+      "Column3": 504,
+      "Column4": 4704,
+      "Column5": "PREMIUM FOUR BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 705,
+      "Column2": 4200,
+      "Column3": 504,
+      "Column4": 4704,
+      "Column5": "PREMIUM FOUR BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 901,
+      "Column2": 3200,
+      "Column3": 384,
+      "Column4": 3584,
+      "Column5": "PREMIUM TRIBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 902,
+      "Column2": 3200,
+      "Column3": 384,
+      "Column4": 3584,
+      "Column5": "PREMIUM TRIBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 903,
+      "Column2": 3200,
+      "Column3": 384,
+      "Column4": 3584,
+      "Column5": "PREMIUM TRIBLE BED WITHOUT KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 904,
+      "Column2": 3500,
+      "Column3": 420,
+      "Column4": 3920,
+      "Column5": "PREMIUM TRIBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 905,
+      "Column2": 2800,
+      "Column3": 336,
+      "Column4": 3136,
+      "Column5": "PREMIUM DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 906,
+      "Column2": 2800,
+      "Column3": 336,
+      "Column4": 3136,
+      "Column5": "PREMIUM DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 907,
+      "Column2": 2800,
+      "Column3": 336,
+      "Column4": 3136,
+      "Column5": "PREMIUM DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 908,
+      "Column2": 2800,
+      "Column3": 336,
+      "Column4": 3136,
+      "Column5": "PREMIUM DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 909,
+      "Column2": 2800,
+      "Column3": 336,
+      "Column4": 3136,
+      "Column5": "PREMIUM DOUBLE BED WITH KITCHEN"
+     },
+     {
+      "MAA RESIDENCY": 222,
+      "Column2": 3800,
+      "Column3": 456,
+      "Column4": 4256,
+      "Column5": "PREMIUM SUITE ROOM"
+     },
+     {
+      "MAA RESIDENCY": 333,
+      "Column2": 3800,
+      "Column3": 456,
+      "Column4": 4256,
+      "Column5": "PREMIUM SUITE ROOM"
+     },
+     null,
+     {
+      "MAA RESIDENCY": "MAA SERVICED APARTMENT"
+     },
+     null,
+     {
+      "MAA RESIDENCY": "ROOM NO",
+      "Column2": "RATE",
+      "Column3": "TAX",
+      "Column4": "TOTAL",
+      "Column5": "ROOM TYPE"
+     },
+     {
+      "MAA RESIDENCY": 101,
+      "Column2": 3000,
+      "Column3": 360,
+      "Column4": 3360,
+      "Column5": "TRIBLE BED ROOM"
+     },
+     {
+      "MAA RESIDENCY": 102,
+      "Column2": 3000,
+      "Column3": 360,
+      "Column4": 3360,
+      "Column5": "TRIBLE BED ROOM"
+     },
+     {
+      "MAA RESIDENCY": 104,
+      "Column2": 2500,
+      "Column3": 300,
+      "Column4": 2800,
+      "Column5": "TRIBLE BED ROOM"
+     },
+     {
+      "MAA RESIDENCY": 201,
+      "Column2": 2800,
+      "Column3": 336,
+      "Column4": 3136,
+      "Column5": "TRIBLE BED ROOM"
+     },
+     {
+      "MAA RESIDENCY": 202,
+      "Column2": 2800,
+      "Column3": 336,
+      "Column4": 3136,
+      "Column5": "TRIBLE BED ROOM"
+     },
+     {
+      "MAA RESIDENCY": 204,
+      "Column2": 2500,
+      "Column3": 300,
+      "Column4": 2800,
+      "Column5": "TRIBLE BED WITH BALCONY"
+     }
+    ]
+    }

@@ -1,20 +1,66 @@
 import { Dropdown, Avatar, Badge, Menu } from 'antd';
+import {useNavigate} from 'react-router-dom'
 import { DownOutlined, BellOutlined } from '@ant-design/icons';
 import usericon from '../assets/images/users/user-12.jpg';
 import { useEffect, useState } from 'react';
+import axios from "axios";
 
-const Header = ({ toggleSidebar }) => {
+const Header = ({ selectedHotel, setSelectedHotel, toggleSidebar }) => {
 
     const [visible, setVisible] = useState(false);
     const [hovered, setHovered] = useState(false);
-    const [curpage, setCurpage] = useState('');
+    const [hotelchange, setHotelchange] = useState("");
+    const [currentTime, setCurrentTime] = useState('');
+    const [loggedInUser, setLoggedInUser] = useState('');
+    const [userName, setUserName] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
-        setCurpage(window.location.pathname);
+        const user = localStorage.getItem('loggedInUser');
+        const token = localStorage.getItem('token');
+        
+        if (!user || !token) {
+            navigate('/login');
+        } else {
+            setLoggedInUser(user);
+        }
+    }, [navigate]);
+
+    useEffect(() => {
+        setLoggedInUser(localStorage.getItem('loggedInUser'))
         checkPage(window.location.pathname);
+        updateButtonstate(window.location.pathname);
+        setCurrentTime(getIndiaTime());
+        const interval = setInterval(() => {
+        setCurrentTime(getIndiaTime());
+        }, 1000);
+        return () => clearInterval(interval);
     },[])
 
-    console.log(curpage);
+    const handleLogout = (e) => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('loggedInUser');
+        localStorage.removeItem('selectedHotel');
+        setSelectedHotel(null);
+        setTimeout(() => {
+            navigate('/login');
+        }, 1000)
+    }
+
+    const getIndiaTime = () => {
+        const indiaTime = new Intl.DateTimeFormat('en-IN', {
+          timeZone: 'Asia/Kolkata', // IST Time Zone
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true, // 12-hour format
+        }).format(new Date());
+    
+        return indiaTime;
+      };
+
     const checkPage = (thispage) => {
         if(thispage !== "/dashboard"){
             setVisible(0);
@@ -22,20 +68,27 @@ const Header = ({ toggleSidebar }) => {
             setVisible(1);
         }
     }
+
+    const updateButtonstate = (thispage) => {
+        if(thispage === '/reservation' || thispage === '/new-booking'){
+            setHotelchange("disabled");
+        }else{
+            setHotelchange("");
+        }
+    }
     
     const menuItems = [
         { key: '1', label: <a href="/dashboard">My Account</a> },
         { key: '2', label: <a href="/dashboard">Lock Screen</a> },
         { type: 'divider' },
-        { key: '3', label: <a href="/login">Logout</a> },
+        { key: '3', label: <a href="#" onClick={handleLogout}>Logout</a> },
     ];
 
     const hotelsList = [
-        { key: '1', label: <p>MAAG</p> },
-        { key: '2', label: <p>MAAR</p> },
-        { key: '3', label: <p>MAAS</p> },
-        { key: '4', label: <p>MAA</p> },
-    ];
+        { key: '1', label: 'MAAG' },
+        { key: '2', label: 'MAAR' },
+        { key: '3', label: 'MAASA' }
+      ];
 
     const notifyItems = [
         {
@@ -70,8 +123,22 @@ const Header = ({ toggleSidebar }) => {
         },
     ];
 
-    const menu = <Menu items={hotelsList} />;
-    // window.location.pathname
+    const handleMenuClick = ({ key }) => {
+        const selected = hotelsList.find((hotel) => hotel.key === key);
+        if (selected) {
+          setSelectedHotel(selected.label);
+        }
+      };
+    const menu = ( <Menu items={hotelsList.map((hotel) => ({ key: hotel.key, label: hotel.label, onClick: handleMenuClick }))}/>);
+
+    const handleNewBookingClick = () => {
+        if (!selectedHotel) {
+            alert('Please select a hotel first');
+        } else {
+            window.location.href = '/new-booking';
+        }
+    };
+
 
     return (
         <>
@@ -115,19 +182,22 @@ const Header = ({ toggleSidebar }) => {
 
                         <ul className="list-unstyled topnav-menu mb-0 d-flex align-items-center mob-hide">
                             <li>
-                            <Dropdown overlay={menu} trigger={["hover"]} >
-                                <button type="button" className="btn btn-warning rounded-pill me-2">Select Hotel</button>
+                            <Dropdown overlay={menu} trigger={['click']} disabled={hotelchange}>
+                                <button type="button" className="btn btn-warning rounded-pill me-2">
+                                {selectedHotel ? `${selectedHotel}` : 'Select Hotel'}
+                                </button>
                             </Dropdown>
                             </li>
                             <li>
-                            <a href='/new-booking' className="btn rounded-pill" style={{display: visible ? 'block' : 'none', backgroundColor: hovered ? "#f32d2f" : "#c0e4aa", color: "white",transition: "background-color 0.3s ease",}} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} >New Booking</a>
+                            <a href="#" onClick={handleNewBookingClick} className="btn rounded-pill" style={{display: visible ? 'block' : 'none',backgroundColor: hovered ? "#f32d2f" : "#c0e4aa",color: "white",transition: "background-color 0.3s ease"}}onMouseEnter={() => setHovered(true)}onMouseLeave={() => setHovered(false)}>New Booking</a>
+                            {/* <a href='/new-booking' className="btn rounded-pill" style={{display: visible ? 'block' : 'none', backgroundColor: hovered ? "#f32d2f" : "#c0e4aa", color: "white",transition: "background-color 0.3s ease",}} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} >New Booking</a> */}
                             </li>
                         </ul>
 
                         <ul className="list-unstyled topnav-menu mb-0 d-flex align-items-center">
                             
                             <li className='mob-hide'>
-                                <span className="badge text-bg-light me-3">9:41 AM</span>
+                                <span className="badge text-bg-light me-3"> {currentTime}</span>
                             </li>
 
                             <li className="dropdown notification-list topbar-dropdown">
@@ -140,7 +210,7 @@ const Header = ({ toggleSidebar }) => {
                                     <Avatar src={usericon} alt="user" style={{ marginRight: '10px' }} />
                                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', lineHeight: '1.5', width:'80px' }}>
                                         <span className="pro-user-name" style={{ fontSize: '16px', fontWeight: 'bold', textAlign:'left' }}>
-                                        Revathi
+                                        {loggedInUser}
                                         </span>
                                         <span className="pro-user-designation" style={{ fontSize: '12px', color: 'gray', textAlign:'left' }}>
                                         Admin Staff

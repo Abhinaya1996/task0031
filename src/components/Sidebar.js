@@ -9,19 +9,22 @@ const Sidebar = ({ isSidebarVisible }) => {
 
     const [activePage, setActivePage] = useState('');
     const [sidebarbg, setSidebarbg] = useState('');
+    const [sidebartextcolor, setSidebartextcolor] = useState('');
 
-    useEffect(() => {
-        feather.replace();
-        setActivePage(window.location.pathname);
-        sidebarbgfix(window.location.pathname);
-    }, []);
+    
     const sidebarbgfix = (curpage) => {
         if(curpage === "/reservation" ){
             setSidebarbg("bg-side2");
+            setSidebartextcolor("text-white");
         }else if(curpage === "/inhouseguest"){
             setSidebarbg("bg-side3");
+            setSidebartextcolor("text-white");
+        }else if(curpage === "/new-booking"){
+            setSidebarbg("bg-side4");
+            setSidebartextcolor("text-white");
         }else{
             setSidebarbg("bg-side");
+            setSidebartextcolor("text-black");
         }
     }
     const getLinkClass = (path) => {
@@ -30,6 +33,12 @@ const Sidebar = ({ isSidebarVisible }) => {
     const getliClass = (path) => {
         return activePage === path ? 'menuitem-active' : '';
     };
+
+    useEffect(() => {
+        setActivePage(window.location.pathname);
+        sidebarbgfix(window.location.pathname);
+        feather.replace();
+    }, [sidebartextcolor]);
     return <>
     <div
       className={`app-sidebar-menu ${isSidebarVisible ? "visible" : "hidden"}`}
@@ -66,36 +75,36 @@ const Sidebar = ({ isSidebarVisible }) => {
                 <ul id="side-menu" style={{padding:'20px 20px'}}>
                     <li className={getliClass('/dashboard')}>
                         <a className={getLinkClass('/dashboard')} href='/dashboard'>
-                            <i data-feather="home"></i>
-                            <span> Home </span>
+                            <i className={sidebartextcolor} data-feather="home"></i>
+                            <span className={sidebartextcolor}> Home </span>
                         </a>
                     </li>
 
                     <li className={getliClass('/booking')}>
                         <a className={getLinkClass('/booking')} href='/booking'>
-                            <i data-feather="book"></i>
-                            <span> Booking </span>
+                            <i className={sidebartextcolor} data-feather="book"></i>
+                            <span className={sidebartextcolor}> Booking </span>
                         </a>
                     </li>
 
                     <li className={getliClass('/reservation')}>
                         <a className={getLinkClass('/reservation')} href='/reservation'>
-                            <i data-feather="calendar"></i>
-                            <span> Reservation </span>
+                            <i className={sidebartextcolor} data-feather="calendar"></i>
+                            <span className={sidebartextcolor}> Reservation </span>
                         </a>
                     </li>
 
                     <li className={getliClass('/inhouseguest')}>
                         <a className={getLinkClass('/inhouseguest')} href='/inhouseguest'>
-                            <i data-feather="log-out"></i>
-                            <span> In House Guest </span>
+                            <i className={sidebartextcolor} data-feather="log-out"></i>
+                            <span className={sidebartextcolor}> In House Guest </span>
                         </a>
                     </li>
 
                     <li className={getliClass('/guesthistory')}>
                         <a className={getLinkClass('/guesthistory')} href='/guesthistory'>
-                            <i data-feather="calendar"></i>
-                            <span> Guest History </span>
+                            <i className={sidebartextcolor} data-feather="calendar"></i>
+                            <span className={sidebartextcolor}> Guest History </span>
                         </a>
                     </li>
 

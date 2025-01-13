@@ -1,12 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import '../assets/css/app.min.css';
 import '../assets/css/icons.min.css';
 import feather from 'feather-icons';
 import { Col, Row } from 'antd';
 import logo from '../assets/images/logos/logo-rbg.png'
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { handleError, handleSuccess } from '../utils';
+
 
 export default function Login(){
+
+    const [loginInfo, setLoginInfo] = useState({
+        email: '',
+        password: ''
+    })
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState("");
 
     const togglePasswordVisibility = () => {
         setShowPassword((prevState) => !prevState);
@@ -15,6 +25,60 @@ export default function Login(){
     useEffect(() => {
         feather.replace();
     }, [showPassword]);
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            navigate('/dashboard');
+        }
+    }, [navigate]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        console.log(name, value);
+        const copyLoginInfo = { ...loginInfo };
+        copyLoginInfo[name] = value;
+        setLoginInfo(copyLoginInfo);
+    }
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        const { email, password } = loginInfo;
+        if (!email || !password) {
+            return handleError('email and password are required')
+        }
+        try {
+            const url = `http://localhost:4000/auth/login`;
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginInfo)
+            });
+            const result = await response.json();
+            const { success, message, jwtToken, name, error } = result;
+            if (success) {
+                handleSuccess(message);
+                localStorage.setItem('token', jwtToken);
+                localStorage.setItem('loggedInUser', name);
+                setTimeout(() => {
+                    navigate('/dashboard')
+                }, 1000)
+            } else if (error) {
+                const details = error?.details[0].message;
+                handleError(details);
+            } else if (!success) {
+                handleError(message);
+            }
+            console.log(result);
+        } catch (err) {
+            handleError(err);
+        }
+    }
+
     return <>
             <div>
                 <div className="content">
@@ -32,15 +96,17 @@ export default function Login(){
                                         </div>
 
                                         <div className="pt-0">
-                                            <form className="my-4">
+                                            <form className="my-4" onSubmit={handleLogin}>
                                                 <div className="form-group mb-3">
                                                     <label htmlFor="emailaddress" className="form-label">Email address</label>
-                                                    <input className="form-control" type="email" id="emailaddress" required="" placeholder="Enter your email"/>
+                                                    <input className="form-control" onChange={handleChange} type='email' name='email' placeholder='Enter your email...' value={loginInfo.email}/>
                                                 </div>
                     
                                                 <div className="form-group mb-3" style={{ position: "relative" }}>
                                                     <label htmlFor="password" className="form-label">Password</label>
-                                                    <input className="form-control" type={showPassword ? "text" : "password"} required id="password" placeholder="Enter your password" style={{ paddingRight: "40px" }} />
+
+                                                    {/* <input className="form-control" type={showPassword ? "text" : "password"} id="password" value={loginInfo.password} onChange={handleChange} required placeholder="Enter your password" style={{ paddingRight: "40px" }} /> */}
+                                                    <input className="form-control" onChange={handleChange} type='password' name='password' placeholder='Enter your password...' value={loginInfo.password} />
                                                     <span
                                                         onClick={togglePasswordVisibility}
                                                         style={{position: "absolute",right: "10px",top: "75%",transform: "translateY(-50%)",cursor: "pointer",color: "#6c757d"}}>
@@ -51,12 +117,17 @@ export default function Login(){
                                                         )}
                                                     </span>
                                                 </div>
+
+                                                {error && (
+                                                    <div className="form-group mb-3">
+                                                        <p className="text-danger">{error}</p>
+                                                    </div>
+                                                )}
                                                 
                                                 <div className="form-group mb-0 row">
                                                     <div className="col-12">
                                                         <div className="d-grid">
-                                                            {/* <button className="btn btn-warning" type="submit"> Log In </button> */}
-                                                            <a href="/dashboard" className="btn btn-warning"> Log In</a>
+                                                            <button className="btn btn-warning" type="submit"> Log In </button>
                                                         </div>
                                                     </div>
                                                 </div>

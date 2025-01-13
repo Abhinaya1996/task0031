@@ -1,89 +1,66 @@
-const employeeModel = require('../model/employeeModel');
 const bcrypt = require('bcrypt');
-const jwt =  require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
+const userModel = require("../model/employeeModel");
 
-exports.userRegister = async(req, res, next) => {
-    const {name, email, password} = req.body;
-    if(!name || !email || !password){
-        res.json({succcess:false, message:"Missing details"});
-    }
-
-    try{
-
-        const existingUser = await employeeModel.findOne({email});
-
-        if (existingUser) {
-            return res.status(400).json({ success: false, message: "User Exists" });
+exports.signup = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        console.log(email);
+        const user = await userModel.findOne({email});
+        if (user) {
+            return res.status(409).json({
+                message: 'User already exists, you can login', 
+                success: false 
+            });
         }
-        
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newuser = await employeeModel.create({ name, email, password: hashedPassword });
-        
-        const token = jwt.sign({ id: newuser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-        
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
+        const newUser = new userModel({ name, email, password: hashedPassword });
+        await newUser.save();
+        res.status(201).json({
+            message: "Signup successful",
+            success: true
         });
-        
-        return res.status(201).json({ success: true, message: "User created successfully", newuser }); 
-        
-
-    }catch(err){
-        console.log(err);
-        res.status(500).json({message: err.message});
-    }
-}
-
-exports.userLogin = async(req, res, next) => {
-    const {email, password } = req.body;
-
-    if(!email || !password){
-        return res.json({succcess:false, message:"Email and Password are required"});
-    }
-
-    try{
-        const user = await employeeModel.findOne({email});
-
-        if(!user){
-            return res.json({succcess:false, message:"User not found"});
-        }
-        
-        const isMatch = await bcrypt.compare(password,user.password);
-
-        if(!isMatch){
-            return res.json({succcess:false, message:"Password is incorrect"});
-        }
-
-        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: '7d'});
-
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
+    } catch (err) {
+        res.status(500).json({
+            message: err.message,
+            success: false
         });
-
-        return res.status(201).json({success:true});
-
-    }catch(err){
-        console.log(err);
-        res.json({succcess:false, message:"Email / Password is incorrect"}); 
     }
-}
+};
 
-exports.userLogout = async(req, res, next) => {
-    try{
-        res.clearCookie('token',{
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-        })
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await userModel.findOne({ email });
+        const errorMsg = 'Auth failed email or password is wrong';
+        if (!user) {
+            return res.status(403)
+                .json({ message: "Username is not exists", success: false });
+        }
+        const isPassEqual = await bcrypt.compare(password, user.password);
+        if (!isPassEqual) {
+            return res.status(403)
+                .json({ message: "Password is incorrect", success: false });
+        }
+        const jwtToken = jwt.sign(
+            { email: user.email, _id: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        )
 
-        return res.json({success: true, mesage:"Logged out"})
-    }catch(err){
-
+        res.status(200)
+            .json({
+                message: "Login Success",
+                success: true,
+                jwtToken,
+                email,
+                name: user.name
+            })
+    } catch (err) {
+        res.status(500)
+            .json({
+                message: err.message,
+                success: false
+            })
     }
 }

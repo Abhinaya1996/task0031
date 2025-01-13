@@ -1,5 +1,5 @@
 import './App.css';
-import {BrowserRouter, Route, Routes, useLocation} from 'react-router-dom'
+import {BrowserRouter, Route, Routes, useLocation, useNavigate} from 'react-router-dom'
 import Dashboard from './pages/Dashboard';
 import Booking from './pages/Booking';
 import Reservation from './pages/Reservation';
@@ -9,23 +9,35 @@ import Header from './components/Header';
 import Sidebar from "./components/Sidebar";
 import Newbooking from './pages/Newbooking';
 import Login from './pages/Login';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   const [isSidebarVisible, setSidebarVisible] = useState(true);
+  
   const location = useLocation();
+  const [selectedHotel, setSelectedHotel] = useState(() => {
+    return localStorage.getItem('selectedHotel') || null;
+  });
+
+  const handleResize = () => {
+    const isMobile = window.innerWidth <= 768;
+    setSidebarVisible(!isMobile); // Show sidebar for system, hide for mobile
+  };
+
+  const navigate = useNavigate();
   
   useEffect(() => {
-    // Check if the device is mobile on initial load
-    const handleResize = () => {
-      const isMobile = window.innerWidth <= 768;
-      setSidebarVisible(!isMobile); // Show sidebar for system, hide for mobile
-    };
+    if (selectedHotel) {
+      localStorage.setItem('selectedHotel', selectedHotel);
+    }
+  }, [selectedHotel]);
 
-    handleResize(); // Set the initial state
-    window.addEventListener("resize", handleResize);
+  useEffect(() => {
+    handleResize();
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener("resize", handleResize); // Clean up listener
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -41,17 +53,19 @@ function App() {
     <div className="bg-primary-subtle">
        <div id="app-layout">
 
-            {!isExcludedRoute && <Header toggleSidebar={toggleSidebar}/>}
+            {!isExcludedRoute && <Header selectedHotel={selectedHotel} setSelectedHotel={setSelectedHotel} toggleSidebar={toggleSidebar}/>}
             {!isExcludedRoute && <Sidebar isSidebarVisible={isSidebarVisible}/>}
+            <AuthProvider>
               <Routes>
                 <Route path='/' element={<Login/>}/>
                 <Route path='/login' element={<Login/>}/>
-                <Route path='/dashboard' element={<Dashboard/>}/>
-                <Route path='/booking' element={<Booking/>}/>
-                <Route path='/reservation' element={<Reservation/>}/>
-                <Route path='/inhouseguest' element={<Inhouseguest/>}/>
-                <Route path='/new-booking' element={<Newbooking/>}/>
+                <Route path='/dashboard' element={<Dashboard selectedHotel={selectedHotel}/>}/>
+                <Route path='/booking' element={<Booking selectedHotel={selectedHotel}/>}/>
+                <Route path='/reservation' element={<Reservation selectedHotel={selectedHotel}/>}/>
+                <Route path='/inhouseguest' element={<Inhouseguest selectedHotel={selectedHotel}/>}/>
+                <Route path='/new-booking' element={<Newbooking selectedHotel={selectedHotel}/>}/>
               </Routes>
+              </AuthProvider>
       </div>
     </div>
   );

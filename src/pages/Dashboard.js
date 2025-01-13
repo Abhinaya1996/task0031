@@ -1,11 +1,41 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import '../assets/css/app.min.css';
 import '../assets/css/icons.min.css';
 import '../assets/css/responsive.css';
+import { useAuth } from '../context/AuthContext';
+import Badge from 'react-bootstrap/Badge';
+import Stack from 'react-bootstrap/Stack';
 
-export default function Dashboard(){
+export default function Dashboard({selectedHotel}){
+
+    const { loggedInUser } = useAuth();
+
+    const [bookings, setBookings] = useState([]);
+
+    const fetchBookings = async () => {
+        try {
+            const url = `http://localhost:4000/api/book/bookings?hotelid=${selectedHotel}`;
+            const headers = {
+                headers: {
+                    'Authorization': localStorage.getItem('token')
+                }
+            }
+            const response = await axios.get(url, headers);
+            setBookings(response.data.bookings); 
+        } catch (error) {
+            console.error('Error fetching bookings:', error);
+        }
+    };
+
+    useEffect(() => {
+
+    if (selectedHotel) {
+        fetchBookings();
+    }
+    }, [selectedHotel]); 
+
     return <>
-       
 
             <div className="content-page">
                 <div className="content">
@@ -35,7 +65,7 @@ export default function Dashboard(){
                                                     <div>
                                                     <p className="text-muted mb-0 fs-13 d-flex justify-content-between" style={{ margin: 0, alignItems: 'flex-end' }}>
                                                         <span className="text-white fs-14" style={{fontSize: '14px',lineHeight: '1',}}>View Booking Status</span>
-                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>12</span>
+                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>0</span>
                                                     </p>
                                                     </div>
                                                 </div>
@@ -62,7 +92,7 @@ export default function Dashboard(){
                                                     <div>
                                                     <p className="text-muted mb-0 fs-13 d-flex justify-content-between" style={{ margin: 0, alignItems: 'flex-end' }}>
                                                         <span className="text-white fs-14" style={{fontSize: '14px',lineHeight: '1',}}>View Booking Status</span>
-                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>05</span>
+                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>0</span>
                                                     </p>
                                                     </div>
                                                 </div>
@@ -89,7 +119,7 @@ export default function Dashboard(){
                                                     <div>
                                                     <p className="text-muted mb-0 fs-13 d-flex justify-content-between" style={{ margin: 0, alignItems: 'flex-end' }}>
                                                         <span className="text-white fs-14" style={{fontSize: '14px',lineHeight: '1',}}>View Booking Status</span>
-                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>17</span>
+                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>8</span>
                                                     </p>
                                                     </div>
                                                 </div>
@@ -116,7 +146,7 @@ export default function Dashboard(){
                                                     <div>
                                                     <p className="text-muted mb-0 fs-13 d-flex justify-content-between" style={{ margin: 0, alignItems: 'flex-end' }}>
                                                         <span className="text-white fs-14" style={{fontSize: '14px',lineHeight: '1',}}>View Booking Status</span>
-                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>03</span>
+                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>2</span>
                                                     </p>
                                                     </div>
                                                 </div>
@@ -148,72 +178,19 @@ export default function Dashboard(){
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                <tr>
-                                                        <td>M01</td>
-                                                        <td>Raja Ganapathi</td>
-                                                        <td>27</td>
-                                                        <td className="text-warning">Single Bed</td>
-                                                        <td>Sep 18; 8.00am</td>
-                                                        <td>-</td>
-                                                        <td>Rs. 1500/-</td>
-                                                        <td>Rs. 1000/-</td>
-                                                        <td></td>
+                                                    {bookings.map((booking) => (
+                                                    <tr key={booking.bookingNo}>
+                                                        <td>{booking.bookingNo}</td>
+                                                        <td>{booking.personName || 'N/A'}</td>
+                                                        <td>{booking.roomNumbers}</td>
+                                                        <td>{booking.roomType || 'N/A'}</td>
+                                                        <td>{new Date(booking.checkin_Booking).toLocaleDateString()}</td>
+                                                        <td>{booking.checkout ? new Date(booking.checkout).toLocaleDateString() : '-'}</td>
+                                                        <td>{booking.payment_Booking[0]?.total || '0'}</td>
+                                                        <td>{booking.payment_Booking[0]?.amountDue || '0'}</td>
+                                                        <td>{booking.checkInStatus ? <Badge bg="success">Checked In</Badge> : <Badge bg="warning" text="white">Booked</Badge>}</td>
                                                     </tr>
-                                                    <tr>
-                                                        <td>M01</td>
-                                                        <td>Swetha Sivakumar</td>
-                                                        <td>12</td>
-                                                        <td className="text-warning">Double Bed</td>
-                                                        <td>Sep 27; 10.00am</td>
-                                                        <td>-</td>
-                                                        <td>Rs. 3500/-</td>
-                                                        <td>Rs. 2000/-</td>
-                                                        <td></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>M01</td>
-                                                        <td>Arun Raj</td>
-                                                        <td>16</td>
-                                                        <td className="text-warning">Double Bed</td>
-                                                        <td>Sep 22; 1.00pm</td>
-                                                        <td>-</td>
-                                                        <td>Rs. 1500/-</td>
-                                                        <td>Rs. 500/-</td>
-                                                        <td></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>M01</td>
-                                                        <td>Venkat</td>
-                                                        <td>28</td>
-                                                        <td className="text-warning">Single Bed</td>
-                                                        <td>Sep 24; 12.00pm</td>
-                                                        <td>-</td>
-                                                        <td>Rs. 1500/-</td>
-                                                        <td>Rs. 750/-</td>
-                                                        <td></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>M01</td>
-                                                        <td>Sathish Kumar</td>
-                                                        <td>02</td>
-                                                        <td className="text-warning">Single Bed</td>
-                                                        <td>Sep 25; 8.00am</td>
-                                                        <td>-</td>
-                                                        <td>Rs. 1500/-</td>
-                                                        <td>Rs. 1000/-</td>
-                                                        <td></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>M01</td>
-                                                        <td>Mohamed Rafik</td>
-                                                        <td>14</td>
-                                                        <td className="text-warning">King size</td>
-                                                        <td>Sep 27; 6.00am</td>
-                                                        <td>-</td>
-                                                        <td>Rs. 5500/-</td>
-                                                        <td>Rs. 3000/-</td>
-                                                        <td></td>
-                                                    </tr>
+                                                    ))}
                                                 </tbody>
                                             </table>
                                         </div>
