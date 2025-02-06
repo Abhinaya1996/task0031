@@ -1,11 +1,11 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const userModel = require("../model/employeeModel");
+const logsModel = require("../model/logsModel");
 
 exports.signup = async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        console.log(email);
         const user = await userModel.findOne({email});
         if (user) {
             return res.status(409).json({
@@ -30,7 +30,7 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, ip, userAgent } = req.body;
         const user = await userModel.findOne({ email });
         const errorMsg = 'Auth failed email or password is wrong';
         if (!user) {
@@ -45,8 +45,15 @@ exports.login = async (req, res) => {
         const jwtToken = jwt.sign(
             { email: user.email, _id: user._id },
             process.env.JWT_SECRET,
-            { expiresIn: '24h' }
+            { expiresIn: '12h' }
         )
+
+        await logsModel.create({
+            userid: user.name,
+            action: 'login',
+            actionat: new Date().toISOString(),
+            logdetails: JSON.stringify({ ip, userAgent })
+        });
 
         res.status(200)
             .json({
@@ -57,6 +64,30 @@ exports.login = async (req, res) => {
                 name: user.name
             })
     } catch (err) {
+        res.status(500)
+            .json({
+                message: err.message,
+                success: false
+            })
+    }
+}
+
+exports.logout = async (req, res) => {
+    try{
+        const { userId } = req.body;
+        const user = await userModel.findOne({ name:userId });
+        await logsModel.create({
+            userid: user.name,
+            action: 'logout',
+            actionat: new Date().toISOString()
+        });
+
+        res.status(200)
+            .json({
+                message: "Logout Success",
+                success: true
+            })
+    }catch(err){
         res.status(500)
             .json({
                 message: err.message,

@@ -10,9 +10,17 @@ import Sidebar from "./components/Sidebar";
 import Newbooking from './pages/Newbooking';
 import Login from './pages/Login';
 import { AuthProvider } from './context/AuthContext';
+import GuestHistory from './pages/GuestHistory';
+import Superadmin from './pages/Superadmin';
+import NotFound from './pages/NotFound';
+import Loginreports from './pages/Loginreports';
+import Roomwise from './pages/Roomwise';
+import CheckInOutReport from './pages/Checkin_out';
+import Reports from './pages/Reports';
 
 function App() {
   const [isSidebarVisible, setSidebarVisible] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString());
   
   const location = useLocation();
   const [selectedHotel, setSelectedHotel] = useState(() => {
@@ -21,7 +29,7 @@ function App() {
 
   const handleResize = () => {
     const isMobile = window.innerWidth <= 768;
-    setSidebarVisible(!isMobile); // Show sidebar for system, hide for mobile
+    setSidebarVisible(!isMobile);
   };
 
   const navigate = useNavigate();
@@ -54,16 +62,22 @@ function App() {
        <div id="app-layout">
 
             {!isExcludedRoute && <Header selectedHotel={selectedHotel} setSelectedHotel={setSelectedHotel} toggleSidebar={toggleSidebar}/>}
-            {!isExcludedRoute && <Sidebar isSidebarVisible={isSidebarVisible}/>}
+            {!isExcludedRoute && <Sidebar selectedDate={selectedDate} setSelectedDate={setSelectedDate} setSelectedHotel={setSelectedHotel} isSidebarVisible={isSidebarVisible}/>}
             <AuthProvider>
               <Routes>
                 <Route path='/' element={<Login/>}/>
                 <Route path='/login' element={<Login/>}/>
-                <Route path='/dashboard' element={<Dashboard selectedHotel={selectedHotel}/>}/>
-                <Route path='/booking' element={<Booking selectedHotel={selectedHotel}/>}/>
-                <Route path='/reservation' element={<Reservation selectedHotel={selectedHotel}/>}/>
-                <Route path='/inhouseguest' element={<Inhouseguest selectedHotel={selectedHotel}/>}/>
-                <Route path='/new-booking' element={<Newbooking selectedHotel={selectedHotel}/>}/>
+                <Route path='/dashboard' element={<Dashboard selectedDate={selectedDate} selectedHotel={selectedHotel}/>}/>
+                <Route path='/booking' element={<Booking selectedDate={selectedDate} selectedHotel={selectedHotel}/>}/>
+                <Route path='/reservation' element={<Reservation selectedDate={selectedDate} selectedHotel={selectedHotel}/>}/>
+                <Route path='/inhouseguest' element={<Inhouseguest selectedDate={selectedDate} selectedHotel={selectedHotel}/>}/>
+                <Route path='/new-booking' element={<Newbooking selectedDate={selectedDate} selectedHotel={selectedHotel}/>}/>
+                <Route path='/reports' element={<Reports selectedDate={selectedDate} selectedHotel={selectedHotel}/>}/>
+                <Route path='/guesthistory' element={<GuestHistory selectedDate={selectedDate} selectedHotel={selectedHotel}/>}/>
+                <Route path='/login-reports' element={<Loginreports selectedDate={selectedDate} selectedHotel={selectedHotel}/>}/>
+                <Route path='/roomwise' element={<Roomwise selectedDate={selectedDate} selectedHotel={selectedHotel}/>}/>
+                <Route path='/checkin-out-report' element={<CheckInOutReport selectedDate={selectedDate} selectedHotel={selectedHotel}/>}/>
+                <Route path='*' element={<NotFound/>}/>
               </Routes>
               </AuthProvider>
       </div>

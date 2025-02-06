@@ -23,6 +23,5 @@ exports.loginValidation = (req, res, next) => {
         return res.status(400)
             .json({ message: "Bad request", error })
     }
-    console.log('loginValidation');
     next();
 }

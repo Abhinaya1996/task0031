@@ -39,14 +39,26 @@ const Header = ({ selectedHotel, setSelectedHotel, toggleSidebar }) => {
         return () => clearInterval(interval);
     },[])
 
-    const handleLogout = (e) => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('loggedInUser');
-        localStorage.removeItem('selectedHotel');
-        setSelectedHotel(null);
-        setTimeout(() => {
-            navigate('/login');
-        }, 1000)
+    const handleLogout = async(e) => {
+        const url = `http://localhost:4000/auth/logout`;
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId: loggedInUser })
+        });
+        const result = await response.json();
+        const { success } = result;
+        if (success) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('selectedHotel');
+            setSelectedHotel(null);
+            setTimeout(() => {
+                navigate('/login');
+            }, 1000)
+        }
     }
 
     const getIndiaTime = () => {
@@ -62,7 +74,7 @@ const Header = ({ selectedHotel, setSelectedHotel, toggleSidebar }) => {
       };
 
     const checkPage = (thispage) => {
-        if(thispage !== "/dashboard"){
+        if(thispage === "/new-booking"){
             setVisible(0);
         }else{
             setVisible(1);
@@ -189,7 +201,7 @@ const Header = ({ selectedHotel, setSelectedHotel, toggleSidebar }) => {
                             </Dropdown>
                             </li>
                             <li>
-                            <a href="#" onClick={handleNewBookingClick} className="btn rounded-pill" style={{display: visible ? 'block' : 'none',backgroundColor: hovered ? "#f32d2f" : "#c0e4aa",color: "white",transition: "background-color 0.3s ease"}}onMouseEnter={() => setHovered(true)}onMouseLeave={() => setHovered(false)}>New Booking</a>
+                            <a href="#" onClick={handleNewBookingClick} className="btn rounded-pill" style={{display: visible ? 'block' : 'none',backgroundColor: hovered ? "#f32d2f" : "#57A860",color: "white",transition: "background-color 0.3s ease"}}onMouseEnter={() => setHovered(true)}onMouseLeave={() => setHovered(false)}>New Booking</a>
                             {/* <a href='/new-booking' className="btn rounded-pill" style={{display: visible ? 'block' : 'none', backgroundColor: hovered ? "#f32d2f" : "#c0e4aa", color: "white",transition: "background-color 0.3s ease",}} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} >New Booking</a> */}
                             </li>
                         </ul>
@@ -216,7 +228,7 @@ const Header = ({ selectedHotel, setSelectedHotel, toggleSidebar }) => {
                                         Admin Staff
                                         </span>
                                     </div>
-                                    <DownOutlined style={{ marginLeft: '8px', alignSelf: 'center' }} />
+                                    <DownOutlined style={{ marginLeft: '8px', marginTop: '20px', alignSelf: 'center' }} />
                                     </span>
                                 </Dropdown>
                             </li>

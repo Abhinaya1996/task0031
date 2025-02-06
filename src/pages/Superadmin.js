@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { handleError, handleSuccess } from '../utils';
 
 
-export default function Login(){
+export default function Superadmin(){
 
     const [loginInfo, setLoginInfo] = useState({
         email: '',
@@ -31,7 +31,7 @@ export default function Login(){
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            navigate('/dashboard');
+            navigate('/dashboard2');
         }
     }, [navigate]);
 
@@ -55,8 +55,8 @@ export default function Login(){
             const loginData = {
                 email,
                 password,
-                ip, 
-                userAgent 
+                ip,         // Include IP address
+                userAgent   // Include device type
             };
             const url = `http://localhost:4000/auth/login`;
             const response = await fetch(url, {
@@ -73,8 +73,7 @@ export default function Login(){
                 localStorage.setItem('token', jwtToken);
                 localStorage.setItem('loggedInUser', name);
                 setTimeout(() => {
-                    navigate('/dashboard');
-                    
+                    navigate('/dashboard')
                 }, 1000)
             } else if (error) {
                 const details = error?.details[0].message;

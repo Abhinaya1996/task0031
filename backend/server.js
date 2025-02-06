@@ -25,11 +25,13 @@ const booking = require('./routes/bookingRoutes');
 const hotel = require('./routes/hotelRoutes');
 const AuthRouter = require('./routes/authRoutes');
 const Room = require('./routes/roomRoutes');
+const Logs = require('./routes/logRoutes');
 
 app.use('/api/employee',employeeRouter);
 app.use('/api/book',booking);
 app.use('/api/hotel',hotel);
 app.use('/auth', AuthRouter); 
+app.use('/logs', Logs); 
 app.use('/room', Room);
 
 connectDatabase();

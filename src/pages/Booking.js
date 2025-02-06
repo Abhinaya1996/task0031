@@ -3,17 +3,32 @@ import axios from 'axios';
 import '../assets/css/app.min.css';
 import '../assets/css/icons.min.css';
 import { useAuth } from '../context/AuthContext';
+import {useNavigate} from 'react-router-dom';
+const moment = require('moment');
 
-export default function Booking({selectedHotel}){
+export default function Booking({selectedHotel, selectedDate}){
 
     const { loggedInUser } = useAuth();
+    const navigate = useNavigate();
 
     const [bookings, setBookings] = useState([]);
+
+    const handleApiError = (error) => {
+        if (error.response && error.response.status === 403) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('selectedHotel');
+            navigate('/login');
+        } else {
+            console.error('Error fetching bookings:');
+        }
+    };
    
 
     const fetchBookings = async () => {
         try {
-            const url = `http://localhost:4000/api/book/hotel-bookings?hotelid=${selectedHotel}`;
+            const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
+            const url = `http://localhost:4000/api/book/hotel-bookings?hotelid=${selectedHotel}&date=${formattedDate}`;
             const headers = {
                 headers: {
                     'Authorization': localStorage.getItem('token')
@@ -22,9 +37,10 @@ export default function Booking({selectedHotel}){
             const response = await axios.get(url, headers);
             setBookings(response.data.bookings); 
         } catch (error) {
+            handleApiError(error);
             console.error('Error fetching bookings:', error);
         }
-        };
+    };
 
         
 
@@ -33,7 +49,7 @@ export default function Booking({selectedHotel}){
         if (selectedHotel) {
             fetchBookings();
         }
-    }, [selectedHotel]); 
+    }, [selectedDate, selectedHotel]); 
 
     return <>
 
@@ -50,11 +66,11 @@ export default function Booking({selectedHotel}){
                                                     <tr>
                                                         <th className="border-top-0 fw-semibold text-black">Bk.No</th>
                                                         <th className="border-top-0 fw-semibold text-black">Name</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Room Type</th>
                                                         <th className="border-top-0 fw-semibold text-black">Check In</th>
                                                         <th className="border-top-0 fw-semibold text-black">Total Amount</th>
                                                         <th className="border-top-0 fw-semibold text-black">Amount Paid</th>
                                                         <th className="border-top-0 fw-semibold text-black">Due Amount</th>
+                                                        <th className="border-top-0 fw-semibold text-black">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className='text-center'>
@@ -62,13 +78,18 @@ export default function Booking({selectedHotel}){
                                                     <tr key={booking.bookingNo}>
                                                         <td>{booking.bookingNo}</td>
                                                         <td>{booking.personName || 'N/A'}</td>
-                                                        <td>
-                                                            {booking.roomType || 'NA'}
-                                                        </td>
                                                         <td>{new Date(booking.checkin_Booking).toLocaleDateString()}</td>
                                                         <td>{booking.payment_Booking[0]?.total || '0'}</td>
                                                         <td className='text-success fw-bold'>{booking.payment_Booking[0]?.amountPaid || '0'}</td>
                                                         <td className='text-danger fw-bolder'>{booking.payment_Booking[0]?.amountDue || '0'}</td>
+                                                        <td>
+                                                            <a className="btn btn-secondary rounded-pill d-flex"
+                                                                href={`http://localhost:3000/reservation?bk=${booking._id}`}
+                                                                style={{ marginLeft: '35%' }}
+                                                                type="submit">
+                                                                Check-In
+                                                            </a>
+                                                        </td>
                                                     </tr>
                                                     ))}
                                                 </tbody>

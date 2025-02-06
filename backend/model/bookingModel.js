@@ -1,4 +1,4 @@
-const { string } = require('joi');
+const { string, number } = require('joi');
 const mongoose = require('mongoose');
 
 const bookingSchema = new mongoose.Schema({
@@ -6,7 +6,9 @@ const bookingSchema = new mongoose.Schema({
     hotelid: { type: String },
     source: { type: String, required: true },
     personName: String,
+    extnmob: String,
     mobile: Number,
+    altmobile: Number,
     email: String,
     guestCount: Number,
     guestDetails:[
@@ -22,16 +24,30 @@ const bookingSchema = new mongoose.Schema({
     nationality: String,
     identityType: String,
     aadharNum: { type: String},
+    passportnum: { type: String},
+    visatype: { type: String},
+    passport_issued: { type: String},
+    passport_expired: { type: String},
+    issuecountry: { type: String},
     checkin_Booking: { type: Date },
     checkin_Reserve: { type: Date },
     checkout: { type: Date },
     cFormNumber: String,
     roomNumbers: String,
     bookingNo: { type: String, unique: true },
+    extraperson: [
+        {
+            name: String,
+            cost: String,
+            days: Number
+        }
+    ],
     payment_Booking: [
         {
             roomrent: Number,
             extra: Number,
+            discper:Number,
+            discamt:Number,
             gst: Number,
             total: Number,
             amountPaid: Number,
@@ -41,13 +57,14 @@ const bookingSchema = new mongoose.Schema({
     ],
     payment_Reserve: [
         {
-            roomrent: Number,
-            extra: Number,
+            discper:Number,
+            discamt:Number,
             addons:Number,
-            gst: Number,
+            total: Number,
             amountPaid: Number,
             amountDue: Number,
-            paymentType: String
+            paymentType: String,
+            payedon:Date
         }
     ],
     checkInStatus: { type: Boolean, default: false },

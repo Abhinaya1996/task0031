@@ -4,18 +4,27 @@ import '../assets/css/app.min.css';
 import '../assets/css/icons.min.css';
 import '../assets/css/responsive.css';
 import { useAuth } from '../context/AuthContext';
+import {useNavigate} from 'react-router-dom'
 import Badge from 'react-bootstrap/Badge';
 import Stack from 'react-bootstrap/Stack';
 
-export default function Dashboard({selectedHotel}){
+export default function Dashboard({selectedDate,selectedHotel}){
 
     const { loggedInUser } = useAuth();
+    const navigate = useNavigate();
+    const [checkInCount, setCheckInCount] = useState(0);
+    const [checkOutCount, setCheckOutCount] = useState(0);
+    const [roomAvailability, setRoomAvailability] = useState({
+        availableRoomsCount: 0,
+        bookedRoomsCount: 0,
+      });
 
     const [bookings, setBookings] = useState([]);
 
     const fetchBookings = async () => {
         try {
-            const url = `http://localhost:4000/api/book/bookings?hotelid=${selectedHotel}`;
+            const date = selectedDate instanceof Date ? selectedDate : new Date(selectedDate);
+            const url = `http://localhost:4000/api/book/bookings?selectedDate=${date.toISOString()}&hotelid=${selectedHotel}`;
             const headers = {
                 headers: {
                     'Authorization': localStorage.getItem('token')
@@ -24,7 +33,58 @@ export default function Dashboard({selectedHotel}){
             const response = await axios.get(url, headers);
             setBookings(response.data.bookings); 
         } catch (error) {
+            handleApiError(error);
             console.error('Error fetching bookings:', error);
+        }
+    };
+
+    const fetchLogCounts = async () => {
+        try {
+            const date = selectedDate instanceof Date ? selectedDate : new Date(selectedDate); // Ensure it's a Date object
+            const url = `http://localhost:4000/api/book/todaysdata?selectedDate=${date.toISOString()}&hotelid=${selectedHotel}`;
+            const headers = {
+                headers: {
+                    Authorization: localStorage.getItem('token'),
+                },
+            };
+    
+            const response = await axios.get(url, headers);
+            const { checkInCount, checkOutCount } = response.data;
+    
+            setCheckInCount(checkInCount);
+            setCheckOutCount(checkOutCount);
+        } catch (error) {
+            console.error('Error fetching log counts:', error);
+        }
+    };
+
+    const fetchRoomAvailability = async () => {
+        try {
+            const date = selectedDate instanceof Date ? selectedDate : new Date(selectedDate);
+            const url = `http://localhost:4000/api/book/room-availability?hotelid=${selectedHotel}&selectedDate=${date.toISOString()}`;
+            const headers = {
+                headers: {
+                    Authorization: localStorage.getItem('token'),
+                },
+            };
+    
+            const response = await axios.get(url, headers);
+            setRoomAvailability(response.data);
+        } catch (error) {
+            console.error('Error fetching room availability:', error);
+        }
+    };
+      
+         
+
+    const handleApiError = (error) => {
+        if (error.response && error.response.status === 403) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('selectedHotel');
+            navigate('/login');
+        } else {
+            console.error('Error fetching bookings:');
         }
     };
 
@@ -33,7 +93,12 @@ export default function Dashboard({selectedHotel}){
     if (selectedHotel) {
         fetchBookings();
     }
-    }, [selectedHotel]); 
+
+    if (selectedDate) {
+        fetchLogCounts();
+        fetchRoomAvailability();
+    }
+    }, [selectedDate,selectedHotel]); 
 
     return <>
 
@@ -65,7 +130,7 @@ export default function Dashboard({selectedHotel}){
                                                     <div>
                                                     <p className="text-muted mb-0 fs-13 d-flex justify-content-between" style={{ margin: 0, alignItems: 'flex-end' }}>
                                                         <span className="text-white fs-14" style={{fontSize: '14px',lineHeight: '1',}}>View Booking Status</span>
-                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>0</span>
+                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>{checkInCount}</span>
                                                     </p>
                                                     </div>
                                                 </div>
@@ -92,7 +157,7 @@ export default function Dashboard({selectedHotel}){
                                                     <div>
                                                     <p className="text-muted mb-0 fs-13 d-flex justify-content-between" style={{ margin: 0, alignItems: 'flex-end' }}>
                                                         <span className="text-white fs-14" style={{fontSize: '14px',lineHeight: '1',}}>View Booking Status</span>
-                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>0</span>
+                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>{checkOutCount}</span>
                                                     </p>
                                                     </div>
                                                 </div>
@@ -119,7 +184,7 @@ export default function Dashboard({selectedHotel}){
                                                     <div>
                                                     <p className="text-muted mb-0 fs-13 d-flex justify-content-between" style={{ margin: 0, alignItems: 'flex-end' }}>
                                                         <span className="text-white fs-14" style={{fontSize: '14px',lineHeight: '1',}}>View Booking Status</span>
-                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>8</span>
+                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>{roomAvailability.availableRoomsCount}</span>
                                                     </p>
                                                     </div>
                                                 </div>
@@ -146,7 +211,7 @@ export default function Dashboard({selectedHotel}){
                                                     <div>
                                                     <p className="text-muted mb-0 fs-13 d-flex justify-content-between" style={{ margin: 0, alignItems: 'flex-end' }}>
                                                         <span className="text-white fs-14" style={{fontSize: '14px',lineHeight: '1',}}>View Booking Status</span>
-                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>2</span>
+                                                        <span className="text-white" style={{fontSize: '80px',lineHeight: '1', fontWeight:'100'}}>{roomAvailability.bookedRoomsCount}</span>
                                                     </p>
                                                     </div>
                                                 </div>
@@ -169,7 +234,6 @@ export default function Dashboard({selectedHotel}){
                                                         <th className="border-top-0 fw-semibold text-black">Bk.No</th>
                                                         <th className="border-top-0 fw-semibold text-black">Name</th>
                                                         <th className="border-top-0 fw-semibold text-black">Room No</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Room Type</th>
                                                         <th className="border-top-0 fw-semibold text-black">Check In</th>
                                                         <th className="border-top-0 fw-semibold text-black">Check Out</th>
                                                         <th className="border-top-0 fw-semibold text-black">Total Amount</th>
@@ -183,12 +247,19 @@ export default function Dashboard({selectedHotel}){
                                                         <td>{booking.bookingNo}</td>
                                                         <td>{booking.personName || 'N/A'}</td>
                                                         <td>{booking.roomNumbers}</td>
-                                                        <td>{booking.roomType || 'N/A'}</td>
                                                         <td>{new Date(booking.checkin_Booking).toLocaleDateString()}</td>
                                                         <td>{booking.checkout ? new Date(booking.checkout).toLocaleDateString() : '-'}</td>
                                                         <td>{booking.payment_Booking[0]?.total || '0'}</td>
                                                         <td>{booking.payment_Booking[0]?.amountDue || '0'}</td>
-                                                        <td>{booking.checkInStatus ? <Badge bg="success">Checked In</Badge> : <Badge bg="warning" text="white">Booked</Badge>}</td>
+                                                        <td>
+                                                            {booking.checkInStatus && !booking.checkOutStatus ? (
+                                                                <Badge bg="primary">Checked In</Badge>
+                                                            ) : !booking.checkInStatus && booking.checkOutStatus ? (
+                                                                <Badge bg="danger">Checked Out</Badge>
+                                                            ) : (
+                                                                <Badge bg="warning" text="white">Booked</Badge>
+                                                            )}
+                                                        </td>
                                                     </tr>
                                                     ))}
                                                 </tbody>
