@@ -58,6 +58,7 @@ export default function Login(){
                 ip, 
                 userAgent 
             };
+            console.log("Sending Login Request:", loginData);
             const url = `${process.env.REACT_APP_API_BASE_URL}/auth/login`;
             const response = await fetch(url, {
                 method: "POST",
