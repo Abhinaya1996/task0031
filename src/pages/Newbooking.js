@@ -480,7 +480,7 @@ export default function Newbooking({selectedHotel}){
 
     const fetchBedroomTypes = async () => {
         try {
-            const url = `http://localhost:4000/room/bedtypes?hotelId=${selectedHotel}`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/room/bedtypes?hotelId=${selectedHotel}`;
             const headers = {
                 headers: {
                     'Authorization': localStorage.getItem('token')
@@ -515,7 +515,7 @@ export default function Newbooking({selectedHotel}){
         e.preventDefault();
 
         try {
-            const url = "http://localhost:4000/api/book/new-booking";
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/new-booking`;
             const headers = {
                 'Authorization': localStorage.getItem('token')
             };

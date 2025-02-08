@@ -24,7 +24,7 @@ export default function Dashboard({selectedDate,selectedHotel}){
     const fetchBookings = async () => {
         try {
             const date = selectedDate instanceof Date ? selectedDate : new Date(selectedDate);
-            const url = `http://localhost:4000/api/book/bookings?selectedDate=${date.toISOString()}&hotelid=${selectedHotel}`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/bookings?selectedDate=${date.toISOString()}&hotelid=${selectedHotel}`;
             const headers = {
                 headers: {
                     'Authorization': localStorage.getItem('token')
@@ -41,7 +41,7 @@ export default function Dashboard({selectedDate,selectedHotel}){
     const fetchLogCounts = async () => {
         try {
             const date = selectedDate instanceof Date ? selectedDate : new Date(selectedDate); // Ensure it's a Date object
-            const url = `http://localhost:4000/api/book/todaysdata?selectedDate=${date.toISOString()}&hotelid=${selectedHotel}`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/todaysdata?selectedDate=${date.toISOString()}&hotelid=${selectedHotel}`;
             const headers = {
                 headers: {
                     Authorization: localStorage.getItem('token'),
@@ -61,7 +61,7 @@ export default function Dashboard({selectedDate,selectedHotel}){
     const fetchRoomAvailability = async () => {
         try {
             const date = selectedDate instanceof Date ? selectedDate : new Date(selectedDate);
-            const url = `http://localhost:4000/api/book/room-availability?hotelid=${selectedHotel}&selectedDate=${date.toISOString()}`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/room-availability?hotelid=${selectedHotel}&selectedDate=${date.toISOString()}`;
             const headers = {
                 headers: {
                     Authorization: localStorage.getItem('token'),

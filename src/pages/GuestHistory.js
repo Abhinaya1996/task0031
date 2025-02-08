@@ -25,7 +25,7 @@ export default function GuestHistory({selectedHotel}){
 
     const fetchBookings = async () => {
         try {
-            const url = `http://localhost:4000/api/book/guesthistory?hotelid=${selectedHotel}`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/guesthistory?hotelid=${selectedHotel}`;
             const headers = {
                 headers: {
                     'Authorization': localStorage.getItem('token')
@@ -56,7 +56,7 @@ export default function GuestHistory({selectedHotel}){
 
   const handleMail = async(bookingId) => {
         try {
-            const url = "http://localhost:4000/api/book/send-mail";
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/send-mail`;
             const headers = {
                 'Authorization': localStorage.getItem('token')
             };
@@ -72,7 +72,7 @@ export default function GuestHistory({selectedHotel}){
 
   const handleCheckout = async(bookingId) => {
     try {
-        const url = "http://localhost:4000/api/book/checkout";
+        const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/checkout`;
         const headers = {
             'Authorization': localStorage.getItem('token')
         };

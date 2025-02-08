@@ -58,7 +58,7 @@ export default function Superadmin(){
                 ip,         // Include IP address
                 userAgent   // Include device type
             };
-            const url = `http://localhost:4000/auth/login`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/auth/login`;
             const response = await fetch(url, {
                 method: "POST",
                 headers: {

@@ -58,7 +58,7 @@ export default function Login(){
                 ip, 
                 userAgent 
             };
-            const url = `http://maahotelcms.in/api/auth/login`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/auth/login`;
             const response = await fetch(url, {
                 method: "POST",
                 headers: {

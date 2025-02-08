@@ -63,7 +63,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
     const fetchBookings = async () => {
         try {
             const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
-            const url = `http://localhost:4000/api/book/inhousebookings?hotelid=${selectedHotel}&selectedDate=${formattedDate}`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/inhousebookings?hotelid=${selectedHotel}&selectedDate=${formattedDate}`;
             const headers = {
                 headers: {
                     'Authorization': localStorage.getItem('token')
@@ -159,7 +159,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
         };
         
         try {
-            const url = "http://localhost:4000/api/book/update-booking-reserve";
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/update-booking-reserve`;
             const headers = {
                 'Authorization': localStorage.getItem('token')
             };
@@ -189,7 +189,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
 
   const handleMail = async(bookingId) => {
         try {
-            const url = "http://localhost:4000/api/book/send-mail";
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/send-mail`;
             const headers = {
                 'Authorization': localStorage.getItem('token')
             };
@@ -210,7 +210,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
             return;
         }
 
-        const url = "http://localhost:4000/api/book/checkout";
+        const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/checkout`;
         const headers = {
             Authorization: localStorage.getItem('token'),
             'Content-Type': 'application/json',

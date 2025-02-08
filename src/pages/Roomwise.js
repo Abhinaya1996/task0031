@@ -13,7 +13,8 @@ export default function Roomwise({selectedDate,selectedHotel}){
     const fetchData = async () => {
         if (!startDate || !endDate) return;  
         try {
-            const response = await axios.get("http://localhost:4000/api/book/room-wise-sales", {
+            const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
+            const response = await axios.get(`${API_BASE_URL}/api/book/room-wise-sales`, {
                 params: { hotelid: selectedHotel, startDate, endDate }
             });
             if (response.data.success) {

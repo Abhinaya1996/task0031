@@ -11,7 +11,8 @@ export default function Loginreports({selectedDate,selectedHotel}){
     useEffect(() => {
         const fetchLogs = async () => {
             try {
-                const response = await axios.get("http://localhost:4000/logs/loginlogs");
+                const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+                const response = await axios.get(`${API_BASE_URL}/logs/loginlogs`);
                 if (response.data.success) {
                     setLogs(response.data.data);
                 } else {

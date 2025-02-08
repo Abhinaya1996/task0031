@@ -12,7 +12,8 @@ export default function CheckInOutReport({ selectedDate, selectedHotel }) {
     const fetchData = async () => {
         if (!startDate || !endDate) return;
         try {
-            const response = await axios.get("http://localhost:4000/api/book/checkin-checkout-report", {
+            const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; // Load from environment
+            const response = await axios.get(`${API_BASE_URL}/api/book/checkin-checkout-report`, {
                 params: { hotelid: selectedHotel, startDate, endDate }
             });
             if (response.data.success) {

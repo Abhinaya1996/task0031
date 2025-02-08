@@ -129,7 +129,7 @@ export default function Reservation({selectedHotel}){
         if (e.key === 'Enter') {
             try {
                 setError('');
-                const url = `http://localhost:4000/api/book/single-booking?bookingNo=${bookingId}`;
+                const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/single-booking?bookingNo=${bookingId}`;
                 const headers = {
                     headers: {
                         Authorization: localStorage.getItem('token'),
@@ -140,8 +140,8 @@ export default function Reservation({selectedHotel}){
                 const bookingData = response.data.booking[0];
                 const hotelName = bookingData.hotelid;
                 const roomType = bookingData.bedType;
-
-                const roomresponse = await axios.get('http://localhost:4000/room/roomtypes', {
+                const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+                const roomresponse = await axios.get(`${API_BASE_URL}/room/roomtypes`, {
                     params: { hotelName, roomType },
                 });
                 setRooms(roomresponse.data.rooms);
@@ -174,7 +174,7 @@ export default function Reservation({selectedHotel}){
 
     const fetchBedroomTypes = async () => {
         try {
-            const url = `http://localhost:4000/room/bedtypes?hotelId=${selectedHotel}`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/room/bedtypes?hotelId=${selectedHotel}`;
             const headers = {
                 headers: {
                     'Authorization': localStorage.getItem('token')
@@ -248,7 +248,7 @@ export default function Reservation({selectedHotel}){
     
           try {
             setError('');
-            const url = `http://localhost:4000/api/book/single-booking?bookingId=${bookingId}`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/single-booking?bookingId=${bookingId}`;
             const headers = {
               headers: {
                 Authorization: localStorage.getItem('token'),
@@ -259,8 +259,8 @@ export default function Reservation({selectedHotel}){
             const bookingData = response.data.booking[0];
             const hotelName = bookingData.hotelid;
             const roomType = bookingData.bedType;
-    
-            const roomResponse = await axios.get('http://localhost:4000/room/roomtypes', {
+            const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+            const roomResponse = await axios.get(`${API_BASE_URL}/room/roomtypes`, {
               params: { hotelName, roomType },
             });
             setRooms(roomResponse.data.rooms);
@@ -441,7 +441,7 @@ export default function Reservation({selectedHotel}){
         try {
             const loguser = localStorage.getItem('loggedInUser');
             const selectedHotel = localStorage.getItem('selectedHotel');
-            const url = `http://localhost:4000/api/book/update-booking`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/update-booking`;
             const headers = {
                 headers: {
                     Authorization: localStorage.getItem('token'),
