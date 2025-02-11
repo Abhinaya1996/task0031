@@ -107,7 +107,7 @@ export default function Login(){
                                         <div className="pt-0">
                                             <form className="my-4" onSubmit={handleLogin}>
                                                 <div className="form-group mb-3">
-                                                    <label htmlFor="emailaddress" className="form-label">Email address</label>
+                                                    <label htmlFor="emailaddress" className="form-label">Email addressss</label>
                                                     <input className="form-control" onChange={handleChange} type='email' name='email' placeholder='Enter your email...' value={loginInfo.email}/>
                                                 </div>
                     
