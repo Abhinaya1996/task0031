@@ -660,8 +660,22 @@ export default function Newbooking({selectedHotel}){
                                 
 
                                 <Row className="pb-1">
+                                    
+                                    <Col xs={24} sm={24} md={3} lg={3} xl={3}>
+                                        <p className="fs-20 fw-semibold text-blue pt-3">Guest Count</p>
+                                        <Row>
+                                            <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 pt-2" style={{marginLeft:'10px'}}>
+                                                <select className="form-select" name="guestCount" onChange={handleChange} value={formData.guestCount} id="example-select">
+                                                    <option>2</option>
+                                                    <option>3</option>
+                                                    <option>4</option>
+                                                    <option>5</option>
+                                                </select>
+                                            </Col>
+                                        </Row>
+                                    </Col>
                                     <Col xs={24} sm={24} md={9} lg={9} xl={9}>
-                                    <p className="fs-20 fw-semibold text-blue pt-3">Extra Person Details -  {extrapersoncost}</p>
+                                        <p className="fs-20 fw-semibold text-blue pt-3">Extra Person Details -  {extrapersoncost} </p>
 
                                         <Row>
                                             <Col xs={24} sm={24} md={12} lg={12} xl={12} className="">
@@ -683,19 +697,6 @@ export default function Newbooking({selectedHotel}){
                                             </Col>
                                             <Col xs={24} sm={24} md={6} lg={6} xl={6} className="pe-2">
                                                 <input type="email" className="form-control" name="extrapersondays" onChange={handleextrapersondayChange} placeholder="Days" autoComplete="off" />
-                                            </Col>
-                                        </Row>
-                                    </Col>
-                                    <Col xs={24} sm={24} md={3} lg={3} xl={3}>
-                                        <p className="fs-20 fw-semibold text-blue pt-3">Guest Count</p>
-                                        <Row>
-                                            <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 pt-2" style={{marginLeft:'10px'}}>
-                                                <select className="form-select" name="guestCount" onChange={handleChange} value={formData.guestCount} id="example-select">
-                                                    <option>2</option>
-                                                    <option>3</option>
-                                                    <option>4</option>
-                                                    <option>5</option>
-                                                </select>
                                             </Col>
                                         </Row>
                                     </Col>
