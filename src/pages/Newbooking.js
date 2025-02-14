@@ -425,7 +425,7 @@ export default function Newbooking({selectedHotel}){
                 ...paymentBooking,
                 paymentType: selectedPaymentType
             };
-    
+     
             return {
                 ...prevData,
                 payment_Booking: [updatedPaymentBooking],
