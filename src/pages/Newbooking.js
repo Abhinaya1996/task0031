@@ -13,7 +13,7 @@ import { DatePicker } from "antd";
 import dayjs from "dayjs";
 
 
-
+ 
 export default function Newbooking({selectedHotel}){
     const { loggedInUser } = useAuth();
     const [randomNumber, setRandomNumber] = useState(''); 
