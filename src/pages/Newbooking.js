@@ -299,7 +299,7 @@ export default function Newbooking({selectedHotel}){
         setExtrapersonrate(expercost); // Store base rate
         setExtrapersoncost(expercost * extrapersondays);
         if(roomrent !== '00.00'){
-            setRoomrent(roomrent + (expercost * extrapersondays));
+            setRoomrent(Number(roomrent) + (expercost * extrapersondays));
         }
         
     };
@@ -309,7 +309,7 @@ export default function Newbooking({selectedHotel}){
         setExtrapersondays(experday);
         setExtrapersoncost(extrapersonrate * experday); 
         if(roomrent !== '00.00'){
-            setRoomrent(roomrent + (extrapersonrate * experday)); 
+            setRoomrent(Number(roomrent) + (extrapersonrate * experday)); 
         }
     };
 
