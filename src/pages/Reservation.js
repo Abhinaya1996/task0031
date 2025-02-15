@@ -756,7 +756,7 @@ export default function Reservation({selectedHotel}){
                                             </Col>
                                             <Col xs={24} sm={24} md={12} lg={12} xl={12} className="pe-2 pt-2">
 
-                                            {rooms.length > 0 && (
+                                            {rooms?.length > 0 && (
                                                 <select className="form-select" name="roomNumbers" onChange={handleChange}>
                                                     <option value="">Select Room ...</option>
                                                     {rooms.map(({ room }) => (
