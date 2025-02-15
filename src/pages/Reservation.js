@@ -260,7 +260,7 @@ export default function Reservation({selectedHotel}){
             const hotelName = bookingData.hotelid;
             const roomType = bookingData.bedType;
             const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-            const roomResponse = await axios.get(`${API_BASE_URL}/room/roomtypes`, {
+            const roomResponse = await axios.get(`${API_BASE_URL}/api/room/roomtypes`, {
               params: { hotelName, roomType },
             });
             setRooms(roomResponse.data.rooms);
@@ -848,7 +848,7 @@ export default function Reservation({selectedHotel}){
                                         </Row>
                                         <Row>
                                             <Col xs={8} sm={8} md={12} lg={12} xl={12} className="pe-2 mob-pad-2">
-                                                <input type="text" name="additionalCharge1" onChange={handleCharge1} className="form-control" autoComplete="off" placeholder="00" />
+                                                <input type="text" name="additionalCharge1" onChange={} className="form-control" autoComplete="off" placeholder="00" />
                                             </Col>
                                             <Col xs={14} sm={14} md={11} lg={11} xl={11} className="pe-2 mob-pad-2">
                                                 <input type="text" name="discper" value={formData.payment_Reserve?.[0]?.discper || ""} onChange={handleDiscount} className="form-control" placeholder="00" />
