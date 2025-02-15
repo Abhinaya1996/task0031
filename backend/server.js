@@ -30,9 +30,9 @@ const Logs = require('./routes/logRoutes');
 app.use('/api/employee',employeeRouter);
 app.use('/api/book',booking);
 app.use('/api/hotel',hotel);
-app.use('/auth', AuthRouter); 
-app.use('/logs', Logs); 
-app.use('/room', Room);
+app.use('/api/auth', AuthRouter); 
+app.use('/api/logs', Logs); 
+app.use('/api/room', Room);
 
 connectDatabase();
 
