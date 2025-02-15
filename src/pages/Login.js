@@ -59,7 +59,7 @@ export default function Login(){
                 userAgent 
             };
             console.log("Sending Login Request:", loginData);
-            const url = `${process.env.REACT_APP_API_BASE_URL}/auth/login`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/auth/login`;
             const response = await fetch(url, {
                 method: "POST",
                 headers: {
