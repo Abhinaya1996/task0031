@@ -13,10 +13,10 @@ import { DatePicker } from "antd";
 import dayjs from "dayjs";
 
 
- 
+
 export default function Newbooking({selectedHotel}){
     const { loggedInUser } = useAuth();
-    const [randomNumber, setRandomNumber] = useState(''); 
+    const [randomNumber, setRandomNumber] = useState('');
     const [roomrent, setRoomrent] = useState("00.00");
     const [actroomrent, setActRoomrent] = useState("00.00");
     const [bedroomTypes, setBedroomTypes] = useState([]);
@@ -425,7 +425,7 @@ export default function Newbooking({selectedHotel}){
                 ...paymentBooking,
                 paymentType: selectedPaymentType
             };
-     
+    
             return {
                 ...prevData,
                 payment_Booking: [updatedPaymentBooking],
@@ -660,45 +660,8 @@ export default function Newbooking({selectedHotel}){
                                 
 
                                 <Row className="pb-1">
-                                    
-                                    <Col xs={24} sm={24} md={3} lg={3} xl={3}>
-                                        <p className="fs-20 fw-semibold text-blue pt-3">Guest Count</p>
-                                        <Row>
-                                            <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 pt-2" style={{marginLeft:'10px'}}>
-                                                <select className="form-select" name="guestCount" onChange={handleChange} value={formData.guestCount} id="example-select">
-                                                    <option>2</option>
-                                                    <option>3</option>
-                                                    <option>4</option>
-                                                    <option>5</option>
-                                                </select>
-                                            </Col>
-                                        </Row>
-                                    </Col>
-                                    
-                                    <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-                                        <p className="fs-20 fw-semibold text-blue pt-3">Room Type</p>
-                                        <Row>
-                                            <Col xs={24} sm={24} md={5} lg={5} xl={5} className="pe-2 pt-2">
-                                                <select className="form-select" name="roomType" onChange={handleRoomTypeChange} value={formData.roomType} id="example-select">
-                                                    <option value="AC">AC</option>
-                                                </select>
-                                            </Col>
-
-                                            <Col xs={24} sm={24} md={18} lg={18} xl={18} className="pe-2 pt-2">
-                                                <select className="form-select" name="bedType" onChange={handleRoomChange} value={formData.bedType} id="example-select">
-                                                    <option>Select Option</option>
-                                                    {bedroomTypes.map((room, index) => (
-                                                        <option key={index} value={room.type}>
-                                                            {room.type}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </Col>
-                                        </Row>
-                                    </Col>
-
                                     <Col xs={24} sm={24} md={9} lg={9} xl={9}>
-                                        <p className="fs-20 fw-semibold text-blue pt-3">Extra Person Details. -  {extrapersoncost} </p>
+                                    <p className="fs-20 fw-semibold text-blue pt-3">Extra Person Details -  {extrapersoncost}</p>
 
                                         <Row>
                                             <Col xs={24} sm={24} md={12} lg={12} xl={12} className="">
@@ -720,6 +683,40 @@ export default function Newbooking({selectedHotel}){
                                             </Col>
                                             <Col xs={24} sm={24} md={6} lg={6} xl={6} className="pe-2">
                                                 <input type="email" className="form-control" name="extrapersondays" onChange={handleextrapersondayChange} placeholder="Days" autoComplete="off" />
+                                            </Col>
+                                        </Row>
+                                    </Col>
+                                    <Col xs={24} sm={24} md={3} lg={3} xl={3}>
+                                        <p className="fs-20 fw-semibold text-blue pt-3">Guest Count</p>
+                                        <Row>
+                                            <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 pt-2" style={{marginLeft:'10px'}}>
+                                                <select className="form-select" name="guestCount" onChange={handleChange} value={formData.guestCount} id="example-select">
+                                                    <option>2</option>
+                                                    <option>3</option>
+                                                    <option>4</option>
+                                                    <option>5</option>
+                                                </select>
+                                            </Col>
+                                        </Row>
+                                    </Col>
+                                    <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+                                        <p className="fs-20 fw-semibold text-blue pt-3">Room Type</p>
+                                        <Row>
+                                            <Col xs={24} sm={24} md={5} lg={5} xl={5} className="pe-2 pt-2">
+                                                <select className="form-select" name="roomType" onChange={handleRoomTypeChange} value={formData.roomType} id="example-select">
+                                                    <option value="AC">AC</option>
+                                                </select>
+                                            </Col>
+
+                                            <Col xs={24} sm={24} md={18} lg={18} xl={18} className="pe-2 pt-2">
+                                                <select className="form-select" name="bedType" onChange={handleRoomChange} value={formData.bedType} id="example-select">
+                                                    <option>Select Option</option>
+                                                    {bedroomTypes.map((room, index) => (
+                                                        <option key={index} value={room.type}>
+                                                            {room.type}
+                                                        </option>
+                                                    ))}
+                                                </select>
                                             </Col>
                                         </Row>
                                     </Col>
