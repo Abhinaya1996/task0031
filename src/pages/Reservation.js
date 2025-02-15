@@ -141,7 +141,7 @@ export default function Reservation({selectedHotel}){
                 const hotelName = bookingData.hotelid;
                 const roomType = bookingData.bedType;
                 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-                const roomresponse = await axios.get(`${API_BASE_URL}/room/roomtypes`, {
+                const roomresponse = await axios.get(`${API_BASE_URL}/api/room/roomtypes`, {
                     params: { hotelName, roomType },
                 });
                 setRooms(roomresponse.data.rooms);
