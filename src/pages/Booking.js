@@ -28,7 +28,7 @@ export default function Booking({selectedHotel, selectedDate}){
     const fetchBookings = async () => {
         try {
             const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
-            const url = `${process.env.REACT_APP_API_BASE_URL}api/book/hotel-bookings?hotelid=${selectedHotel}&date=${formattedDate}`;
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/hotel-bookings?hotelid=${selectedHotel}&date=${formattedDate}`;
             const headers = {
                 headers: {
                     'Authorization': localStorage.getItem('token')
