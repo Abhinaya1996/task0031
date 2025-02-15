@@ -84,7 +84,7 @@ export default function Booking({selectedHotel, selectedDate}){
                                                         <td className='text-danger fw-bolder'>{booking.payment_Booking[0]?.amountDue || '0'}</td>
                                                         <td>
                                                             <a className="btn btn-secondary rounded-pill d-flex"
-                                                                href={`http://localhost:3000/reservation?bk=${booking._id}`}
+                                                                href={`${process.env.REACT_APP_API_BASE_URL}/reservation?bk=${booking._id}`}
                                                                 style={{ marginLeft: '35%' }}
                                                                 type="submit">
                                                                 Check-In
