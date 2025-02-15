@@ -293,15 +293,21 @@ export default function Newbooking({selectedHotel}){
             checkin_Booking: formattedDate,
         }));
     };
+    // extrapersoncost
         
     const handleextrapersoncostChange = (e) => {
         let expercost = parseFloat(e.target.value) || 0;
-        setExtrapersonrate(expercost); // Store base rate
+        setExtrapersonrate(expercost);
         setExtrapersoncost(expercost * extrapersondays);
         if(roomrent !== '00.00'){
-            setRoomrent(Number(roomrent) + (expercost * extrapersondays));
+            if(isGstChecked){
+                setRoomrent((Number(actroomrent) + (expercost * extrapersondays) + extraValue + gstcost ) - discvalue );
+            }else{
+                console.log(actroomrent+'-'+expercost+'-'+extrapersondays+'-'+extraValue+'-'+discvalue);
+                setRoomrent((Number(actroomrent) + Number(expercost * extrapersondays) + Number(extraValue) ) - Number(discvalue) );
+            }
+            
         }
-        
     };
     
     const handleextrapersondayChange = (e) => {
@@ -309,14 +315,19 @@ export default function Newbooking({selectedHotel}){
         setExtrapersondays(experday);
         setExtrapersoncost(extrapersonrate * experday); 
         if(roomrent !== '00.00'){
-            setRoomrent(Number(roomrent) + (extrapersonrate * experday)); 
+            if(isGstChecked){
+                setRoomrent((Number(actroomrent) + (extrapersonrate * experday) + extraValue + gstcost ) - discvalue );
+            }else{
+                console.log(actroomrent+'-'+extrapersonrate+'-'+experday+'-'+extraValue+'-'+discvalue);
+                setRoomrent((Number(actroomrent) + Number(extrapersonrate * experday) + Number(extraValue) ) - Number(discvalue) );
+            }
         }
     };
 
     const handleGstChange = (event) => {
         const isChecked = event.target.checked;
         setIsGstChecked(event.target.checked);
-        let newroomrent = isChecked ? parseFloat(roomrent) + parseFloat(gstcost) : parseFloat(roomrent) - parseFloat(gstcost);
+        let newroomrent = isChecked ? parseFloat(roomrent) + parseFloat(extrapersoncost) + parseFloat(gstcost) : parseFloat(roomrent) + parseFloat(extrapersoncost) - parseFloat(gstcost);
         setRoomrent(newroomrent);
     
         setFormData((prevData) => {
@@ -341,7 +352,7 @@ export default function Newbooking({selectedHotel}){
 
     const handleExtraChange = (e) => {
         const extraValuen = parseFloat(e.target.value) || 0;
-        let newroomrent = parseFloat(actroomrent) + parseFloat(extraValuen);
+        let newroomrent = parseFloat(actroomrent) + parseFloat(extraValuen) + parseFloat(extrapersoncost);
         setRoomrent(newroomrent);
         setExtraValue(extraValuen);
     
@@ -352,7 +363,7 @@ export default function Newbooking({selectedHotel}){
     
             const updatedPaymentBooking = {
                 ...paymentBooking,
-                total: parseInt(paymentBooking.roomrent, 10) + parseInt(paymentBooking.gst) + parseInt(extraValue),
+                total: parseInt(paymentBooking.roomrent, 10) + parseInt(paymentBooking.gst) + parseInt(extraValue) + parseInt(extrapersoncost),
                 extra: extraValuen ? extraValuen : 0,
             };
     
@@ -368,9 +379,9 @@ export default function Newbooking({selectedHotel}){
         const discval = (discper * (parseFloat(actroomrent)+parseFloat(extraValue)))/100;
         let newroomrents = 0.00;
         if(isGstChecked){
-            newroomrents = parseFloat(actroomrent) + parseFloat(extraValue) + parseFloat(gstcost) - parseFloat(discval);
+            newroomrents = parseFloat(actroomrent) + parseFloat(extraValue) + parseFloat(gstcost) + parseFloat(extrapersoncost) - parseFloat(discval);
         }else{
-            newroomrents = parseFloat(actroomrent) + parseFloat(extraValue) - parseFloat(discval);
+            newroomrents = parseFloat(actroomrent) + parseFloat(extraValue) + parseFloat(extrapersoncost) - parseFloat(discval);
         }
         
         setRoomrent(newroomrents);
@@ -660,8 +671,47 @@ export default function Newbooking({selectedHotel}){
                                 
 
                                 <Row className="pb-1">
+                                    
+                                    <Col xs={24} sm={24} md={3} lg={3} xl={3}>
+                                        <p className="fs-20 fw-semibold text-blue pt-3">Guest Count</p>
+                                        <Row>
+                                            <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 pt-2" style={{marginLeft:'10px'}}>
+                                                <select className="form-select" name="guestCount" onChange={handleChange} value={formData.guestCount} id="example-select">
+                                                    <option>2</option>
+                                                    <option>3</option>
+                                                    <option>4</option>
+                                                    <option>5</option>
+                                                </select>
+                                            </Col>
+                                        </Row>
+                                    </Col>
+
+                                    <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+                                        <p className="fs-20 fw-semibold text-blue pt-3">Room Type</p>
+                                        <Row>
+                                            <Col xs={24} sm={24} md={5} lg={5} xl={5} className="pe-2 pt-2">
+                                                <select className="form-select" name="roomType" onChange={handleRoomTypeChange} value={formData.roomType} id="example-select">
+                                                    <option value="AC">AC</option>
+                                                </select>
+                                            </Col>
+
+                                            <Col xs={24} sm={24} md={18} lg={18} xl={18} className="pe-2 pt-2">
+                                                <select className="form-select" name="bedType" onChange={handleRoomChange} value={formData.bedType} id="example-select">
+                                                    <option>Select Option</option>
+                                                    {bedroomTypes.map((room, index) => (
+                                                        <option key={index} value={room.type}>
+                                                            {room.type}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </Col>
+                                        </Row>
+                                    </Col>
+
+
+
                                     <Col xs={24} sm={24} md={9} lg={9} xl={9}>
-                                    <p className="fs-20 fw-semibold text-blue pt-3">Extra Person Details -  {extrapersoncost}</p>
+                                        <p className="fs-20 fw-semibold text-blue pt-3 m-0">Extra Person Details -  {extrapersoncost}</p>
 
                                         <Row>
                                             <Col xs={24} sm={24} md={12} lg={12} xl={12} className="">
@@ -683,40 +733,6 @@ export default function Newbooking({selectedHotel}){
                                             </Col>
                                             <Col xs={24} sm={24} md={6} lg={6} xl={6} className="pe-2">
                                                 <input type="email" className="form-control" name="extrapersondays" onChange={handleextrapersondayChange} placeholder="Days" autoComplete="off" />
-                                            </Col>
-                                        </Row>
-                                    </Col>
-                                    <Col xs={24} sm={24} md={3} lg={3} xl={3}>
-                                        <p className="fs-20 fw-semibold text-blue pt-3">Guest Count</p>
-                                        <Row>
-                                            <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 pt-2" style={{marginLeft:'10px'}}>
-                                                <select className="form-select" name="guestCount" onChange={handleChange} value={formData.guestCount} id="example-select">
-                                                    <option>2</option>
-                                                    <option>3</option>
-                                                    <option>4</option>
-                                                    <option>5</option>
-                                                </select>
-                                            </Col>
-                                        </Row>
-                                    </Col>
-                                    <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-                                        <p className="fs-20 fw-semibold text-blue pt-3">Room Type</p>
-                                        <Row>
-                                            <Col xs={24} sm={24} md={5} lg={5} xl={5} className="pe-2 pt-2">
-                                                <select className="form-select" name="roomType" onChange={handleRoomTypeChange} value={formData.roomType} id="example-select">
-                                                    <option value="AC">AC</option>
-                                                </select>
-                                            </Col>
-
-                                            <Col xs={24} sm={24} md={18} lg={18} xl={18} className="pe-2 pt-2">
-                                                <select className="form-select" name="bedType" onChange={handleRoomChange} value={formData.bedType} id="example-select">
-                                                    <option>Select Option</option>
-                                                    {bedroomTypes.map((room, index) => (
-                                                        <option key={index} value={room.type}>
-                                                            {room.type}
-                                                        </option>
-                                                    ))}
-                                                </select>
                                             </Col>
                                         </Row>
                                     </Col>
@@ -874,14 +890,14 @@ export default function Newbooking({selectedHotel}){
                                                         <p className="fs-18 fw-semibold text-black pt-1">Rs {roomrent}/- </p>
                                                     </Col>
                                                 </Row>
-                                                <Row>
+                                                {/* <Row>
                                                     <Col xs={24} sm={24} md={9} lg={9} xl={9} >
                                                         <p className="fs-18 fw-semibold text-blue pt-1">Balance :</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                         <p className="fs-18 fw-semibold text-black pt-1">Rs {actroomrent}/- </p>
                                                     </Col>
-                                                </Row>
+                                                </Row> */}
                                             </Col>
                                         </Row>
                                     </Col>
