@@ -530,9 +530,10 @@ export default function Newbooking({selectedHotel}){
             return;
         }
 
-        if (formData.amountdue === 0) {
-            formData.amountdue = formData.total;
-        }
+        const updatedPaymentBooking = formData.payment_Booking.map((payment) => ({
+            ...payment,
+            amountDue: payment.amountDue === 0 ? payment.total : payment.amountDue,
+        }));
 
         try {
             const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/new-booking`;
