@@ -525,6 +525,11 @@ export default function Newbooking({selectedHotel}){
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!formData.email || formData.email.trim() === "") {
+            alert("Email is required");
+            return;
+        }
+
         try {
             const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/new-booking`;
             const headers = {
