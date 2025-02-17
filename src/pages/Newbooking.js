@@ -530,6 +530,10 @@ export default function Newbooking({selectedHotel}){
             return;
         }
 
+        if (formData.amountdue === 0) {
+            formData.amountdue = formData.total;
+        }
+
         try {
             const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/new-booking`;
             const headers = {
