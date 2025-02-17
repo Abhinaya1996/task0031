@@ -529,6 +529,10 @@ export default function Newbooking({selectedHotel}){
             alert("Email is required");
             return;
         }
+        const updatedPaymentBooking = formData.payment_Booking.map((payment) => ({
+            ...payment,
+            amountDue: payment.amountDue === 0 ? payment.total : payment.amountDue,
+        }));
 
         try {
             const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/new-booking`;
@@ -590,8 +594,7 @@ export default function Newbooking({selectedHotel}){
                 payment_Booking: [
                     {
                         ...prevData.payment_Booking[0],
-                        roomrent: selectedRoom.rate, 
-                        amountDue: selectedRoom.rate,
+                        roomrent: selectedRoom.rate,
                     },
                 ]
             }));
