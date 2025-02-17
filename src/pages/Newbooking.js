@@ -529,6 +529,12 @@ export default function Newbooking({selectedHotel}){
             alert("Email is required");
             return;
         }
+
+        if (!formData.bedType || formData.bedType.trim() === "") {
+            alert("Please select Bed Type");
+            return;
+        }
+        
         const updatedPaymentBooking = formData.payment_Booking.map((payment) => ({
             ...payment,
             amountDue: payment.amountDue === 0 ? payment.total : payment.amountDue,
