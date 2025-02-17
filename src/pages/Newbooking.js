@@ -586,6 +586,7 @@ export default function Newbooking({selectedHotel}){
                     {
                         ...prevData.payment_Booking[0],
                         roomrent: selectedRoom.rate, 
+                        amountDue: selectedRoom.rate,
                     },
                 ]
             }));
