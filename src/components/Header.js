@@ -40,7 +40,7 @@ const Header = ({ selectedHotel, setSelectedHotel, toggleSidebar }) => {
     },[])
 
     const handleLogout = async(e) => {
-        const url = `${process.env.REACT_APP_API_BASE_URL}auth/logout`;
+        const url = `${process.env.REACT_APP_API_BASE_URL}/api/auth/logout`;
         const response = await fetch(url, {
             method: "POST",
             headers: {
