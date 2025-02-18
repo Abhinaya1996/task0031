@@ -747,7 +747,7 @@ export default function Newbooking({selectedHotel}){
                                             <input type="text" className="form-control" name="extrapersoncharge" onChange={handleextrapersoncostChange} placeholder="Cost" maxLength="10" autoComplete="off" />
                                             </Col>
                                             <Col xs={24} sm={24} md={6} lg={6} xl={6} className="pe-2">
-                                                <input type="email" className="form-control" name="extrapersondays" onChange={handleextrapersondayChange} placeholder="Days" autoComplete="off" />
+                                                <input type="text" className="form-control" name="extrapersondays" onChange={handleextrapersondayChange} placeholder="Days" autoComplete="off" />
                                             </Col>
                                         </Row>
                                     </Col>
