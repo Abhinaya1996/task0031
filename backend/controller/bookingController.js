@@ -5,14 +5,23 @@ const logsModel = require("../model/logsModel");
 const moment = require('moment');
 
 const generateBookingID = async (hotelName) => {
+
+    var sellhott = "";
+            if(hotelName === "MAA GRAND" ){
+                sellhott = "MAAG";
+            }else if(hotelName === "MAA RESIDENCY" ){
+                sellhott = "MAAR";
+            }else if(hotelName === "MAA SERVICE APARTMENTS" ){
+                sellhott = "MAASA";
+            }
     const lastBooking = await bookingModel.find({ hotelid: hotelName }).sort({ bookingNo: -1 }).limit(1);
-    let newBookingId = `${hotelName.toUpperCase()}001`;
+    let newBookingId = `${sellhott.toUpperCase()}001`;
 
     if (lastBooking.length > 0) {
         const lastBookingNo = lastBooking[0].bookingNo;
-        const lastNumber = parseInt(lastBookingNo.replace(hotelName, ''), 10); 
+        const lastNumber = parseInt(lastBookingNo.replace(sellhott, ''), 10); 
         const newNumber = lastNumber + 1;
-        newBookingId = `${hotelName.toUpperCase()}${String(newNumber).padStart(3, '0')}`;
+        newBookingId = `${sellhott.toUpperCase()}${String(newNumber).padStart(3, '0')}`;
     }
 
     return newBookingId;
