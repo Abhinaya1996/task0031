@@ -663,7 +663,15 @@ export default function Newbooking({selectedHotel}){
                                     <Col xs={24} sm={24} md={24} lg={24} xl={24}>
 
                                         <Row>
-                                            <Col xs={24} sm={24} md={6} lg={6} xl={6} className="pe-2 pt-2">
+                                            <Col xs={8} sm={8} md={1} lg={1} xl={1} className="pe-2 pt-2">
+                                                <select className="form-select" name="nameTitle" onChange={handleChange} value={formData.roomType} id="example-select">
+                                                    <option value="Mr.">Mr.</option>
+                                                    <option value="Mrs.">Mrs.</option>
+                                                    <option value="Miss.">Miss.</option>
+                                                    <option value="Ms.">Ms.</option>
+                                                </select>
+                                            </Col>
+                                            <Col xs={16} sm={16} md={5} lg={5} xl={5} className="pe-2 pt-2">
                                                 <input type="text" className="form-control" name="personName" onChange={handleChange} value={formData.personName} placeholder="Booking Person Name" autoComplete="off" />
                                             </Col>
                                             <Col xs={12} sm={12} md={2} lg={2} xl={2} className="pe-2 pt-2">
