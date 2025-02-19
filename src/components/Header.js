@@ -97,9 +97,9 @@ const Header = ({ selectedHotel, setSelectedHotel, toggleSidebar }) => {
     ];
 
     const hotelsList = [
-        { key: '1', label: 'MAAG' },
-        { key: '2', label: 'MAAR' },
-        { key: '3', label: 'MAASA' }
+        { key: '1', label: 'MAA GRAND' },
+        { key: '2', label: 'MAA RESIDENCY' },
+        { key: '3', label: 'MAA SERVICE APARTMENTS' }
       ];
 
     const notifyItems = [
