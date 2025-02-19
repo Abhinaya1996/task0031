@@ -118,7 +118,7 @@ export default function Dashboard({selectedDate,selectedHotel}){
                                                     <div className="d-flex justify-content-between align-items-end pb-5">
                                                         <div>
                                                             <div className="d-flex align-items-center mb-3">    
-                                                                <p className="mb-0 text-white fs-15">Today's Check in</p>
+                                                                <p className="mb-0 text-white fs-15">Today's Arrival</p>
                                                             </div>
                                                         </div>
 
@@ -145,7 +145,7 @@ export default function Dashboard({selectedDate,selectedHotel}){
                                                     <div className="d-flex justify-content-between align-items-end pb-5">
                                                         <div>
                                                             <div className="d-flex align-items-center mb-3">    
-                                                                <p className="mb-0 text-white fs-15">Today's Check out</p>
+                                                                <p className="mb-0 text-white fs-15">Today's Departure</p>
                                                             </div>
                                                         </div>
 
@@ -172,7 +172,7 @@ export default function Dashboard({selectedDate,selectedHotel}){
                                                     <div className="d-flex justify-content-between align-items-end pb-5">
                                                         <div>
                                                             <div className="d-flex align-items-center mb-3">    
-                                                                <p className="mb-0 text-white fs-15">Room's Available</p>
+                                                                <p className="mb-0 text-white fs-15">Room's Availability</p>
                                                             </div>
                                                         </div>
 
