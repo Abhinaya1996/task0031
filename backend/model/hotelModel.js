@@ -1,6 +1,6 @@
 // models/hotelModel.js
 const hotels = {
-    MAAR: [
+    "MAA RESIDENCY": [
         {type:"DOUBLE BED WITHOUT KITCHEN",
             rate:"1700",
             acrate:"2500",
@@ -26,7 +26,7 @@ const hotels = {
             phone:"098411 77234",
             rooms:[111]}
     ],
-    MAAG: [
+    "MAA GRAND": [
         {type:"PREMIUM DOUBLE BED WITHOUT KITCHEN",
             rate:"2500",
             acrate:"2500",
@@ -92,7 +92,7 @@ const hotels = {
             phone:" ",
             rooms:[222, 333]}
     ],
-    MAASA: [
+    "MAA SERVICE APARTMENTS": [
         {type:" TRIPLE BED ROOM - Type1",
             rate:"3000",
             acrate:"2500",
