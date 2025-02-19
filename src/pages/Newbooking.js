@@ -906,7 +906,7 @@ export default function Newbooking({selectedHotel}){
                                                         <p className="fs-18 fw-semibold text-blue pt-1">GST :</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                        <p className="fs-18 fw-semibold text-black pt-1">Rs {gstcost}/- </p>
+                                                        <p className="fs-18 fw-semibold text-black pt-1">Rs {isGstChecked ? gstcost : 0.00}/- </p>
                                                     </Col>
                                                 </Row>
                                                 <Row>
