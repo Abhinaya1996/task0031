@@ -97,9 +97,9 @@ const Header = ({ selectedHotel, setSelectedHotel, toggleSidebar }) => {
     ];
 
     const hotelsList = [
-        { key: '1', label: 'MAA GRAND' },
-        { key: '2', label: 'MAA RESIDENCY' },
-        { key: '3', label: 'MAA SERVICE APARTMENTS' }
+        { key: 'MAAG', label: 'MAA GRAND' },
+        { key: 'MAAR', label: 'MAA RESIDENCY' },
+        { key: 'MAASA', label: 'MAA SERVICE APARTMENTS' }
       ];
 
     const notifyItems = [
@@ -138,7 +138,7 @@ const Header = ({ selectedHotel, setSelectedHotel, toggleSidebar }) => {
     const handleMenuClick = ({ key }) => {
         const selected = hotelsList.find((hotel) => hotel.key === key);
         if (selected) {
-          setSelectedHotel(selected.label);
+          setSelectedHotel(selected.key);
         }
       };
     const menu = ( <Menu items={hotelsList.map((hotel) => ({ key: hotel.key, label: hotel.label, onClick: handleMenuClick }))}/>);
