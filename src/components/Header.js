@@ -138,7 +138,7 @@ const Header = ({ selectedHotel, setSelectedHotel, toggleSidebar }) => {
     const handleMenuClick = ({ key }) => {
         const selected = hotelsList.find((hotel) => hotel.key === key);
         if (selected) {
-          setSelectedHotel(selected.key);
+          setSelectedHotel(selected.label);
         }
       };
     const menu = ( <Menu items={hotelsList.map((hotel) => ({ key: hotel.key, label: hotel.label, onClick: handleMenuClick }))}/>);
