@@ -633,16 +633,19 @@ export default function Newbooking({selectedHotel}){
                                             <Col xs={24} sm={24} md={6} lg={6} xl={6} className="pe-2 pt-2">
                                             <Row>
                                                     <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                                                    <p className="fs-18 fw-semibold text-blue pt-3">Source of Looking</p>
+                                                    <p className="fs-18 fw-semibold text-blue pt-3">Source of Booking</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={24} lg={24} xl={24}>
                                                         <select className="form-select" name="source" onChange={handleChange} value={formData.source} id="example-select">
                                                             <option>Select ...</option>
-                                                            <option value="google">Google</option>
-                                                            <option value="social-media">Social media</option>
-                                                            <option value="friends-and-family">Friends & family </option>
-                                                            <option value="portal">Portal</option>
-                                                            <option value="others">Others</option>
+                                                            <option value="Google">Google</option>
+                                                            <option value="Social Media">Social media</option>
+                                                            <option value="Make My Trip">Make My Trip</option>
+                                                            <option value="Friends and Family">Friends & Family </option>
+                                                            <option value="Travel Agent">Travel Agent</option>
+                                                            <option value="Walk-In">Walk-In</option>
+                                                            <option value="Portal">Portal</option>
+                                                            <option value="Others">Others</option>
                                                         </select>
                                                     </Col>
                                                 </Row>
@@ -766,8 +769,8 @@ export default function Newbooking({selectedHotel}){
                                                 <Row>
                                                     <Col xs={24} sm={24} md={24} lg={24} xl={24}>
                                                         <DatePicker
-                                                            showTime
-                                                            format="DD-MM-YYYY HH:mm A"
+                                                            showTime={{ use12Hours: false }} // Enforces 24-hour format
+                                                            format="DD-MM-YYYY HH:mm" // 24-hour format
                                                             placeholder="Select Date & Time"
                                                             onChange={handleCheckindate}
                                                             className="form-control"
