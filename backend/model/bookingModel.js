@@ -5,6 +5,7 @@ const bookingSchema = new mongoose.Schema({
     staffid: { type: String },
     hotelid: { type: String },
     source: { type: String, required: true },
+    nameTitle: String,
     personName: String,
     extnmob: String,
     mobile: Number,
