@@ -730,7 +730,7 @@ export default function Newbooking({selectedHotel}){
 
 
                                     <Col xs={24} sm={24} md={9} lg={9} xl={9}>
-                                        <p className="fs-20 fw-semibold text-blue pt-3 m-0">Extra Person Details -  {extrapersoncost}</p>
+                                        <p className="fs-20 fw-semibold text-blue pt-3 m-0">Extra Packs -  {extrapersoncost}</p>
 
                                         <Row>
                                             <Col xs={24} sm={24} md={12} lg={12} xl={12} className="">
