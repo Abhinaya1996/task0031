@@ -509,10 +509,18 @@ export default function Newbooking({selectedHotel}){
         feather.replace();
         fetchBedroomTypes();
         if (loggedInUser) {
+            var sellhott = "";
+            if(selectedHotel === "MAA GRAND" ){
+                sellhott = "MAAG";
+            }else if(selectedHotel === "MAA RESIDENCY" ){
+                sellhott = "MAAR";
+            }else if(selectedHotel === "MAA SERVICE APARTMENTS" ){
+                sellhott = "MAASA";
+            }
             setFormData((prevData) => ({
                 ...prevData,
                 staffid: loggedInUser,
-                hotelid: selectedHotel,
+                hotelid: sellhott,
                 extnmob: "+1",
                 guestCount: 2,
                 roomType: 'AC',
