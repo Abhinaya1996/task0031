@@ -657,7 +657,7 @@ export default function Newbooking({selectedHotel}){
 
                                 <div className="line mt-4" style={{height: '2px', background: 'linear-gradient(to right, transparent 50%, #b4b4b4 50%)',backgroundSize: '16px 2px, 100% 2px'}}></div>
 
-                                <p className="fs-20 fw-semibold text-blue pt-2">Customer Details</p>
+                                <p className="fs-20 fw-semibold text-blue pt-2">Guest Info</p>
 
                                 <Row className="pb-1">
                                     <Col xs={24} sm={24} md={24} lg={24} xl={24}>
@@ -691,7 +691,7 @@ export default function Newbooking({selectedHotel}){
                                 <Row className="pb-1">
                                     
                                     <Col xs={24} sm={24} md={3} lg={3} xl={3}>
-                                        <p className="fs-20 fw-semibold text-blue pt-3">Guest Count</p>
+                                        <p className="fs-20 fw-semibold text-blue pt-3">No of Packs</p>
                                         <Row>
                                             <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 pt-2" style={{marginLeft:'10px'}}>
                                                 <select className="form-select" name="guestCount" onChange={handleChange} value={formData.guestCount} id="example-select">
@@ -710,6 +710,7 @@ export default function Newbooking({selectedHotel}){
                                             <Col xs={24} sm={24} md={5} lg={5} xl={5} className="pe-2 pt-2">
                                                 <select className="form-select" name="roomType" onChange={handleRoomTypeChange} value={formData.roomType} id="example-select">
                                                     <option value="AC">AC</option>
+                                                    <option value="Non-AC">Non-AC</option>
                                                 </select>
                                             </Col>
 
