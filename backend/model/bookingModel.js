@@ -12,6 +12,9 @@ const bookingSchema = new mongoose.Schema({
     altmobile: Number,
     email: String,
     guestCount: Number,
+    extrapersonName: String,
+    extrapersoncharge: Number,
+    extrapersondays: Number,
     guestDetails:[
         {
             name:String,
