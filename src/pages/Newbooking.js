@@ -17,8 +17,9 @@ import dayjs from "dayjs";
 export default function Newbooking({selectedHotel}){
     const { loggedInUser } = useAuth();
     const [randomNumber, setRandomNumber] = useState('');
-    const [roomrent, setRoomrent] = useState("00.00");
-    const [actroomrent, setActRoomrent] = useState("00.00");
+    const [baseRoomRent, setBaseRoomRent] = useState(0);
+    const [roomrent, setRoomrent] = useState(0);
+    const [actroomrent, setActRoomrent] = useState(0);
     const [bedroomTypes, setBedroomTypes] = useState([]);
     const [selectedBedroom, setSelectedBedroom] = useState('AC');
     const [selectedBedtype, setSelectedBedtype] = useState('');
@@ -282,6 +283,8 @@ export default function Newbooking({selectedHotel}){
         navigate("/booking");
     };
 
+    const round2 = (num) => Math.round(num * 100) / 100;
+
     const handleCheckindate = (date, dateString) => {
         if (!date) return;
         const formattedDate = date.format("YYYY-MM-DD HH:mm A");
@@ -296,40 +299,135 @@ export default function Newbooking({selectedHotel}){
     // extrapersoncost
         
     const handleextrapersoncostChange = (e) => {
-        let expercost = parseFloat(e.target.value) || 0;
+        const expercost = parseFloat(e.target.value) || 0;
         setExtrapersonrate(expercost);
-        setExtrapersoncost(expercost * extrapersondays);
-        if(roomrent !== '00.00'){
-            if(isGstChecked){
-                setRoomrent((Number(actroomrent) + (expercost * extrapersondays) + extraValue + gstcost ) - discvalue );
-            }else{
-                console.log(actroomrent+'-'+expercost+'-'+extrapersondays+'-'+extraValue+'-'+discvalue);
-                setRoomrent((Number(actroomrent) + Number(expercost * extrapersondays) + Number(extraValue) ) - Number(discvalue) );
-            }
-            
+        
+        // Calculate total extra person cost for current days.
+        const calcExtraCost = round2(expercost * extrapersondays);
+        setExtrapersoncost(calcExtraCost);
+        
+        // Calculate new final room rent:
+        // Formula: actroomrent (base) + extraValue + (gstcost if checked) + extra person cost - discvalue
+        let newRoomRent = 0;
+        if (isGstChecked) {
+          newRoomRent = round2(
+            Number(actroomrent) +
+            Number(extraValue) +
+            Number(gstcost) +
+            calcExtraCost -
+            Number(discvalue)
+          );
+        } else {
+          newRoomRent = round2(
+            Number(actroomrent) +
+            Number(extraValue) +
+            calcExtraCost -
+            Number(discvalue)
+          );
         }
-    };
-    
-    const handleextrapersondayChange = (e) => {
-        let experday = parseInt(e.target.value) || 1;
+        
+        setRoomrent(newRoomRent);
+      
+        // Update formData including extrapersoncharge and extrapersondays
+        setFormData((prevData) => {
+          const paymentBooking = prevData.payment_Booking.length > 0 
+            ? prevData.payment_Booking[0]
+            : {
+                roomrent: 0,
+                gst: 0,
+                extra: 0,
+                discper: 0,
+                discamt: 0,
+                total: 0,
+                amountPaid: 0,
+                amountDue: 0,
+                paymentType: ""
+              };
+      
+          const updatedPaymentBooking = {
+            ...paymentBooking,
+            total: newRoomRent,
+            extra: Number(extraValue),
+          };
+      
+          return {
+            ...prevData,
+            extrapersoncharge: calcExtraCost, // updating the extra person charge
+            extrapersondays: extrapersondays,  // updating the extra person days
+            payment_Booking: [updatedPaymentBooking],
+          };
+        });
+      };
+          
+      const handleextrapersondayChange = (e) => {
+        const experday = parseInt(e.target.value, 10) || 1;
         setExtrapersondays(experday);
-        setExtrapersoncost(extrapersonrate * experday); 
-        if(roomrent !== '00.00'){
-            if(isGstChecked){
-                setRoomrent((Number(actroomrent) + (extrapersonrate * experday) + extraValue + gstcost ) - discvalue );
-            }else{
-                console.log(actroomrent+'-'+extrapersonrate+'-'+experday+'-'+extraValue+'-'+discvalue);
-                setRoomrent((Number(actroomrent) + Number(extrapersonrate * experday) + Number(extraValue) ) - Number(discvalue) );
-            }
+        
+        // Recalculate total extra person cost with updated days count.
+        const calcExtraCost = round2(extrapersonrate * experday);
+        setExtrapersoncost(calcExtraCost);
+        
+        // Calculate new final room rent with updated extra person cost.
+        let newRoomRent = 0;
+        if (isGstChecked) {
+          newRoomRent = round2(
+            Number(actroomrent) +
+            Number(extraValue) +
+            Number(gstcost) +
+            calcExtraCost -
+            Number(discvalue)
+          );
+        } else {
+          newRoomRent = round2(
+            Number(actroomrent) +
+            Number(extraValue) +
+            calcExtraCost -
+            Number(discvalue)
+          );
         }
-    };
+        
+        setRoomrent(newRoomRent);
+        
+        // Update formData including extrapersoncharge and extrapersondays
+        setFormData((prevData) => {
+          const paymentBooking = prevData.payment_Booking.length > 0 
+            ? prevData.payment_Booking[0]
+            : {
+                roomrent: 0,
+                gst: 0,
+                extra: 0,
+                discper: 0,
+                discamt: 0,
+                total: 0,
+                amountPaid: 0,
+                amountDue: 0,
+                paymentType: ""
+              };
+      
+          const updatedPaymentBooking = {
+            ...paymentBooking,
+            total: newRoomRent,
+            extra: Number(extraValue),
+          };
+      
+          return {
+            ...prevData,
+            extrapersoncharge: calcExtraCost, // update extra person charge
+            extrapersondays: experday,          // update extra person days
+            payment_Booking: [updatedPaymentBooking],
+          };
+        });
+      };
+      
 
     const handleGstChange = (event) => {
         const isChecked = event.target.checked;
-        setIsGstChecked(event.target.checked);
-        let newroomrent = isChecked ? parseFloat(roomrent) + parseFloat(extrapersoncost) + parseFloat(gstcost) : parseFloat(roomrent) + parseFloat(extrapersoncost) - parseFloat(gstcost);
-        setRoomrent(newroomrent);
-    
+        setIsGstChecked(isChecked);
+        let newroomrent = isChecked 
+            ? parseFloat(roomrent) + parseFloat(extrapersoncost) + parseFloat(gstcost)
+            : parseFloat(roomrent) + parseFloat(extrapersoncost) - parseFloat(gstcost);
+        setRoomrent(round2(newroomrent));
+        
         setFormData((prevData) => {
             const paymentBooking = prevData.payment_Booking.length > 0 
                 ? prevData.payment_Booking[0] 
@@ -338,8 +436,8 @@ export default function Newbooking({selectedHotel}){
             const updatedPaymentBooking = {
                 ...paymentBooking, 
                 total: isChecked
-                    ? parseInt(paymentBooking.roomrent, 10) + parseInt(paymentBooking.extra) + parseInt(gstcost)
-                    : parseInt(paymentBooking.roomrent, 10) + parseInt(paymentBooking.extra),
+                    ? round2(parseFloat(paymentBooking.roomrent) + parseFloat(paymentBooking.extra) + parseFloat(gstcost))
+                    : round2(parseFloat(paymentBooking.roomrent) + parseFloat(paymentBooking.extra)),
                 gst: isChecked ? gstcost : 0, 
             };
     
@@ -352,75 +450,110 @@ export default function Newbooking({selectedHotel}){
 
     const handleExtraChange = (e) => {
         const extraValuen = parseFloat(e.target.value) || 0;
-        let newroomrent = parseFloat(actroomrent) + parseFloat(extraValuen) + parseFloat(extrapersoncost);
-        setRoomrent(newroomrent);
         setExtraValue(extraValuen);
-    
-        setFormData((prevData) => {
-            const paymentBooking = prevData.payment_Booking.length > 0 
-                ? prevData.payment_Booking[0] 
-                : { roomrent: 0, gst: 0, extra: 0, discper: 0, discamt: 0, total: 0, amountPaid: 0, amountDue: 0, paymentType: "" };
-    
-            const updatedPaymentBooking = {
-                ...paymentBooking,
-                total: parseInt(paymentBooking.roomrent, 10) + parseInt(paymentBooking.gst) + parseInt(extraValue) + parseInt(extrapersoncost),
-                extra: extraValuen ? extraValuen : 0,
-            };
-    
-            return {
-                ...prevData,
-                payment_Booking: [updatedPaymentBooking],
-            };
-        });
-    };
-
-    const handleDiscChange = (event) => {
-        const discper = event.target.value || 0;
-        const discval = (discper * (parseFloat(actroomrent)+parseFloat(extraValue)))/100;
-        let newroomrents = 0.00;
-        if(isGstChecked){
-            newroomrents = parseFloat(actroomrent) + parseFloat(extraValue) + parseFloat(gstcost) + parseFloat(extrapersoncost) - parseFloat(discval);
-        }else{
-            newroomrents = parseFloat(actroomrent) + parseFloat(extraValue) + parseFloat(extrapersoncost) - parseFloat(discval);
-        }
+      
+        // Ensure baseRoomRent is treated as a number
+        const newActRoomRent = round2(parseFloat(baseRoomRent) + extraValuen);
+        setActRoomrent(newActRoomRent);
         
-        setRoomrent(newroomrents);
-        setDiscvalue(discval);
-
+        const newTotal = round2(
+          newActRoomRent +
+            (parseFloat(extrapersoncost) || 0) -
+            (parseFloat(discvalue) || 0) +
+            (isGstChecked ? (parseFloat(gstcost) || 0) : 0)
+        );
+        setRoomrent(newTotal);
+      
         setFormData((prevData) => {
-            const paymentBooking = prevData.payment_Booking.length > 0 
-                ? prevData.payment_Booking[0] 
-                : { roomrent: 0, gst: 0, extra: 0, discper: 0, discamt: 0, total: 0, amountPaid: 0, amountDue: 0, paymentType: "" };
-    
-            const updatedPaymentBooking = {
-                ...paymentBooking,
-                total: parseInt(paymentBooking.roomrent, 10) + parseInt(paymentBooking.gst) + parseInt(paymentBooking.extra) - parseInt(discval),
-                discper: discper,
-                discamt: discval,
-            };
-    
-            return {
-                ...prevData,
-                payment_Booking: [updatedPaymentBooking],
-            };
+          const paymentBooking = prevData.payment_Booking.length > 0 
+            ? prevData.payment_Booking[0]
+            : {
+                roomrent: 0,
+                gst: 0,
+                extra: 0,
+                discper: 0,
+                discamt: 0,
+                total: 0,
+                amountPaid: 0,
+                amountDue: 0,
+                paymentType: ""
+              };
+      
+          const updatedPaymentBooking = {
+            ...paymentBooking,
+            total: newTotal,
+            extra: extraValuen,
+          };
+      
+          return {
+            ...prevData,
+            payment_Booking: [updatedPaymentBooking],
+          };
         });
-    }
+      };      
+
+      const handleDiscChange = (event) => {
+        const discper = parseFloat(event.target.value) || 0;
+        
+        // Calculate the base sum: actroomrent + extraValue + (GST if checked)
+        const baseSum = parseFloat(actroomrent) + (isGstChecked ? parseFloat(gstcost) : 0);
+        
+        // Calculate discount based on the baseSum
+        const discval = round2((discper * baseSum) / 100);
+        
+        // Final room rent: (baseSum - discount) + extrapersoncost
+        // (Assuming extrapersoncost should be added as before)
+        const newRoomRent = round2(baseSum - discval + parseFloat(extrapersoncost));
+        
+        setRoomrent(newRoomRent);
+        setDiscvalue(discval);
+        
+        // Update the payment booking details accordingly
+        setFormData((prevData) => {
+          const paymentBooking = prevData.payment_Booking.length > 0 
+            ? prevData.payment_Booking[0]
+            : {
+                roomrent: 0,
+                gst: 0,
+                extra: 0,
+                discper: 0,
+                discamt: 0,
+                total: 0,
+                amountPaid: 0,
+                amountDue: 0,
+                paymentType: ""
+              };
+          
+          const updatedPaymentBooking = {
+            ...paymentBooking,
+            total: newRoomRent,
+            discper: discper,
+            discamt: discval,
+          };
+          
+          return {
+            ...prevData,
+            payment_Booking: [updatedPaymentBooking],
+          };
+        });
+      };
+      
+      
 
     const handlePaymentChange = (event) => {
         const paymentamt = event.target.value;
-    
+        
         setFormData((prevData) => {
             const paymentBooking = prevData.payment_Booking[0];
-
-            let balanceAmt = parseFloat(roomrent) - parseFloat(paymentamt);
-    
+            let balanceAmt = round2(parseFloat(roomrent) - parseFloat(paymentamt));
+            
             const updatedPaymentBooking = {
                 ...paymentBooking,
                 total: roomrent,
                 amountPaid: paymentamt,
                 amountDue: balanceAmt,
             };
-    
+        
             return {
                 ...prevData,
                 payment_Booking: [updatedPaymentBooking],
@@ -454,6 +587,9 @@ export default function Newbooking({selectedHotel}){
         mobile: "",
         email: "",
         guestCount: "",
+        extrapersonName: "",
+        extrapersoncharge: "",
+        extrapersondays: "",
         roomType: "",
         bedType: "",
         address: "",
@@ -483,11 +619,20 @@ export default function Newbooking({selectedHotel}){
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
+        let formattedValue = value;
+        
+        // Capitalize first letter for all fields except email
+        if (name !== "email") {
+            console.log(name);
+          formattedValue = value.charAt(0).toUpperCase() + value.slice(1);
+        }
+        
+        setFormData((prevState) => ({
+          ...prevState,
+          [name]: formattedValue,
         }));
-    };
+      };      
+    
 
     const fetchBedroomTypes = async () => {
         try {
@@ -509,14 +654,6 @@ export default function Newbooking({selectedHotel}){
         feather.replace();
         fetchBedroomTypes();
         if (loggedInUser) {
-            // var sellhott = "";
-            // if(selectedHotel === "MAA GRAND" ){
-            //     sellhott = "MAAG";
-            // }else if(selectedHotel === "MAA RESIDENCY" ){
-            //     sellhott = "MAAR";
-            // }else if(selectedHotel === "MAA SERVICE APARTMENTS" ){
-            //     sellhott = "MAASA";
-            // }
             setFormData((prevData) => ({
                 ...prevData,
                 staffid: loggedInUser,
@@ -595,8 +732,11 @@ export default function Newbooking({selectedHotel}){
             const selectedRoom = bedroomTypes.find((room) => room.type === selectedRoomtype);
             setIsGstChecked(false);
             if(selectedBedroom === 'AC'){
-                setRoomrent(selectedRoom.rate);
+                setBaseRoomRent(selectedRoom.rate);
                 setActRoomrent(selectedRoom.rate);
+                setRoomrent(selectedRoom.rate);
+
+
             }else{
                 setRoomrent(selectedRoom.acrate);
             }
@@ -613,7 +753,6 @@ export default function Newbooking({selectedHotel}){
                 ]
             }));
         }
-        
     }
 
     return <>
@@ -693,7 +832,6 @@ export default function Newbooking({selectedHotel}){
                                             </Col>
                                             <Col xs={24} sm={24} md={5} lg={5} xl={5} className="pe-2 pt-2">
                                             <input type="text" className="form-control" name="mobile" onChange={handleChangePhone} value={formData.mobile} placeholder="Mobile Number" maxLength="10" autoComplete="off" />
-                                                {/* <input type="text" className="form-control" name="mobile" onChange={handleChange} value={formData.mobile} placeholder="Mobile Number" /> */}
                                             </Col>
                                             <Col xs={24} sm={24} md={7} lg={7} xl={7} className="pe-2 pt-2">
                                                 <input type="email" className="form-control" name="email" onChange={handleChange} value={formData.email} placeholder="Email Address" autoComplete="off" />
@@ -706,8 +844,8 @@ export default function Newbooking({selectedHotel}){
 
                                 <Row className="pb-1">
                                     
-                                    <Col xs={24} sm={24} md={3} lg={3} xl={3}>
-                                        <p className="fs-20 fw-semibold text-blue pt-3">No of Packs</p>
+                                    <Col xs={24} sm={24} md={2} lg={2} xl={2}>
+                                        <p className="fs-20 fw-semibold text-blue pt-3">No of Pax</p>
                                         <Row>
                                             <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 pt-2" style={{marginLeft:'10px'}}>
                                                 <select className="form-select" name="guestCount" onChange={handleChange} value={formData.guestCount} id="example-select">
@@ -720,17 +858,17 @@ export default function Newbooking({selectedHotel}){
                                         </Row>
                                     </Col>
 
-                                    <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+                                    <Col xs={24} sm={24} md={9} lg={9} xl={9}>
                                         <p className="fs-20 fw-semibold text-blue pt-3">Room Type</p>
                                         <Row>
-                                            <Col xs={24} sm={24} md={5} lg={5} xl={5} className="pe-2 pt-2">
+                                            <Col xs={24} sm={24} md={4} lg={4} xl={4} className="pe-2 pt-2">
                                                 <select className="form-select" name="roomType" onChange={handleRoomTypeChange} value={formData.roomType} id="example-select">
                                                     <option value="AC">AC</option>
                                                     <option value="Non-AC">Non-AC</option>
                                                 </select>
                                             </Col>
 
-                                            <Col xs={24} sm={24} md={18} lg={18} xl={18} className="pe-2 pt-2">
+                                            <Col xs={24} sm={24} md={16} lg={16} xl={16} className="pe-2 pt-2">
                                                 <select className="form-select" name="bedType" onChange={handleRoomChange} value={formData.bedType} id="example-select">
                                                     <option>Select Option</option>
                                                     {bedroomTypes.map((room, index) => (
@@ -739,6 +877,9 @@ export default function Newbooking({selectedHotel}){
                                                         </option>
                                                     ))}
                                                 </select>
+                                            </Col>
+                                            <Col xs={24} sm={24} md={4} lg={4} xl={4} className="pe-2 pt-2">
+                                                    <input type="text" className="form-control" value={baseRoomRent} readOnly />
                                             </Col>
                                         </Row>
                                     </Col>
@@ -761,13 +902,13 @@ export default function Newbooking({selectedHotel}){
                                         </Row>
                                         <Row>
                                             <Col xs={24} sm={24} md={12} lg={12} xl={12} className="pe-2">
-                                                <input type="text" className="form-control" name="extrapersonName" onChange={handleChange} placeholder="Extra Person Name" autoComplete="off" />
+                                                <input type="text" className="form-control" name="extrapersonName" onChange={handleChange} value={formData.extrapersonName} placeholder="Extra Person Name" autoComplete="off" />
                                             </Col>
                                             <Col xs={24} sm={24} md={6} lg={6} xl={6} className="pe-2">
-                                            <input type="text" className="form-control" name="extrapersoncharge" onChange={handleextrapersoncostChange} placeholder="Cost" maxLength="10" autoComplete="off" />
+                                            <input type="text" className="form-control" name="extrapersoncharge" onChange={handleextrapersoncostChange} value={formData.extrapersoncharge} placeholder="Cost" maxLength="10" autoComplete="off" />
                                             </Col>
                                             <Col xs={24} sm={24} md={6} lg={6} xl={6} className="pe-2">
-                                                <input type="text" className="form-control" name="extrapersondays" onChange={handleextrapersondayChange} placeholder="Days" autoComplete="off" />
+                                                <input type="text" className="form-control" name="extrapersondays" onChange={handleextrapersondayChange} value={formData.extrapersondays} placeholder="Days" autoComplete="off" />
                                             </Col>
                                         </Row>
                                     </Col>
@@ -785,13 +926,13 @@ export default function Newbooking({selectedHotel}){
 
                                                 <Row>
                                                     <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                                                        <DatePicker
-                                                            showTime={{ use12Hours: false }} // Enforces 24-hour format
-                                                            format="DD-MM-YYYY HH:mm" // 24-hour format
-                                                            placeholder="Select Date & Time"
-                                                            onChange={handleCheckindate}
-                                                            className="form-control"
-                                                        />
+                                                    <DatePicker
+                                                        showTime={{ use12Hours: false, minuteStep: 15 }} // 24-hour format with 15-minute steps
+                                                        format="DD-MM-YYYY HH:mm" // Ensures the correct display format
+                                                        placeholder="Select Date & Time"
+                                                        onChange={handleCheckindate}
+                                                        className="form-control"
+                                                    />
                                                     </Col>
                                                 </Row>
                                             </Col>
@@ -807,7 +948,6 @@ export default function Newbooking({selectedHotel}){
                                                     <textarea className="form-control" name="address" rows="1" onChange={handleChange} value={formData.address}>
 
                                                     </textarea>
-                                                        {/* <input type="text" className="form-control" name="address" onChange={handleChange} value={formData.address} placeholder="Type Customer Address" autoComplete="off" /> */}
                                                     </Col>
                                                 </Row>
                                             </Col>
@@ -895,10 +1035,10 @@ export default function Newbooking({selectedHotel}){
                                                 </Row>
                                                 <Row>
                                                     <Col xs={24} sm={24} md={9} lg={9} xl={9} >
-                                                        <p className="fs-18 fw-semibold text-blue pt-1">Extra : </p>
+                                                        <p className="fs-18 fw-semibold text-blue pt-1">Extra Pax: </p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                        <p className="fs-18 fw-semibold text-black pt-1">Rs {extraValue}/- </p>
+                                                        <p className="fs-18 fw-semibold text-black pt-1">Rs {extrapersoncost}/- </p>
                                                     </Col>
                                                 </Row>
                                                 <Row>
@@ -925,14 +1065,6 @@ export default function Newbooking({selectedHotel}){
                                                         <p className="fs-18 fw-semibold text-black pt-1">Rs {roomrent}/- </p>
                                                     </Col>
                                                 </Row>
-                                                {/* <Row>
-                                                    <Col xs={24} sm={24} md={9} lg={9} xl={9} >
-                                                        <p className="fs-18 fw-semibold text-blue pt-1">Balance :</p>
-                                                    </Col>
-                                                    <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                        <p className="fs-18 fw-semibold text-black pt-1">Rs {actroomrent}/- </p>
-                                                    </Col>
-                                                </Row> */}
                                             </Col>
                                         </Row>
                                     </Col>
