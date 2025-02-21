@@ -23,18 +23,20 @@ export default function Newbooking({selectedHotel}){
     const [bedroomTypes, setBedroomTypes] = useState([]);
     const [selectedBedroom, setSelectedBedroom] = useState('AC');
     const [selectedBedtype, setSelectedBedtype] = useState('');
-    const [extraValue, setExtraValue] = useState('0.00');
-    const [discvalue, setDiscvalue] = useState('0.00');
+    const [extraValue, setExtraValue] = useState(0);
+    const [discvalue, setDiscvalue] = useState(0);
     const [gstcost, setGstcost] = useState('0.00');
-    const [extrapersoncost, setExtrapersoncost] = useState('0');
+    const [extrapersoncost, setExtrapersoncost] = useState(0);
     const [extrapersondays, setExtrapersondays] = useState(1);
     const [extrapersonrate, setExtrapersonrate] = useState(0);
+    const [bookingadvance, setBookingadvance] = useState(0);
 
     const [isGstChecked, setIsGstChecked] = useState(false);
 
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState(''); 
     const navigate = useNavigate();
+
     const countryCodes = [
         {"country":"Afghanistan","code":"93","iso":"AF"},
         {"country":"Albania","code":"355","iso":"AL"},
@@ -278,307 +280,6 @@ export default function Newbooking({selectedHotel}){
         {"country":"Zimbabwe","code":"263","iso":"ZW"}
     ];
 
-    const handleClose = () => {
-        setShowModal(false);
-        navigate("/booking");
-    };
-
-    const round2 = (num) => Math.round(num * 100) / 100;
-
-    const handleCheckindate = (date, dateString) => {
-        if (!date) return;
-        const formattedDate = date.format("YYYY-MM-DD HH:mm A");
-    
-        console.log("Selected Date & Time:", formattedDate);
-    
-        setFormData((prevData) => ({
-            ...prevData,
-            checkin_Booking: formattedDate,
-        }));
-    };
-    // extrapersoncost
-        
-    const handleextrapersoncostChange = (e) => {
-        const expercost = parseFloat(e.target.value) || 0;
-        setExtrapersonrate(expercost);
-        
-        // Calculate total extra person cost for current days.
-        const calcExtraCost = round2(expercost * extrapersondays);
-        setExtrapersoncost(calcExtraCost);
-        
-        // Calculate new final room rent:
-        // Formula: actroomrent (base) + extraValue + (gstcost if checked) + extra person cost - discvalue
-        let newRoomRent = 0;
-        if (isGstChecked) {
-          newRoomRent = round2(
-            Number(actroomrent) +
-            Number(gstcost) +
-            calcExtraCost -
-            Number(discvalue)
-          );
-        } else {
-          newRoomRent = round2(
-            Number(actroomrent) +
-            calcExtraCost -
-            Number(discvalue)
-          );
-        }
-        
-        setRoomrent(newRoomRent);
-      
-        // Update formData including extrapersoncharge and extrapersondays
-        setFormData((prevData) => {
-          const paymentBooking = prevData.payment_Booking.length > 0 
-            ? prevData.payment_Booking[0]
-            : {
-                roomrent: 0,
-                gst: 0,
-                extra: 0,
-                discper: 0,
-                discamt: 0,
-                total: 0,
-                amountPaid: 0,
-                amountDue: 0,
-                paymentType: ""
-              };
-      
-          const updatedPaymentBooking = {
-            ...paymentBooking,
-            total: newRoomRent,
-            extra: Number(extraValue),
-          };
-      
-          return {
-            ...prevData,
-            extrapersoncharge: calcExtraCost, // updating the extra person charge
-            extrapersondays: extrapersondays,  // updating the extra person days
-            payment_Booking: [updatedPaymentBooking],
-          };
-        });
-      };
-          
-      const handleextrapersondayChange = (e) => {
-        const rawValue = e.target.value; // raw value from the input, might be an empty string
-        // Update formData so the controlled input shows what the user typed.
-        setFormData((prevData) => ({
-          ...prevData,
-          extrapersondays: rawValue,
-        }));
-        
-        // Use a fallback value of 1 for calculations if rawValue is empty or invalid.
-        const experday = rawValue === "" ? 1 : parseInt(rawValue, 10) || 1;
-        setExtrapersondays(experday);
-        
-        // Recalculate total extra person cost based on the numeric value
-        const calcExtraCost = round2(extrapersonrate * experday);
-        setExtrapersoncost(calcExtraCost);
-        
-        // Calculate new final room rent using your existing logic.
-        let newRoomRent = 0;
-        if (isGstChecked) {
-          newRoomRent = round2(
-            Number(actroomrent) +
-            Number(gstcost) +
-            calcExtraCost -
-            Number(discvalue)
-          );
-        } else {
-          newRoomRent = round2(
-            Number(actroomrent) +
-            calcExtraCost -
-            Number(discvalue)
-          );
-        }
-        
-        setRoomrent(newRoomRent);
-        
-        // Update formData with extrapersoncharge and payment booking.
-        setFormData((prevData) => {
-          const paymentBooking = prevData.payment_Booking.length > 0 
-            ? prevData.payment_Booking[0]
-            : {
-                roomrent: 0,
-                gst: 0,
-                extra: 0,
-                discper: 0,
-                discamt: 0,
-                total: 0,
-                amountPaid: 0,
-                amountDue: 0,
-                paymentType: ""
-              };
-      
-          const updatedPaymentBooking = {
-            ...paymentBooking,
-            total: newRoomRent,
-            extra: Number(extraValue),
-          };
-      
-          return {
-            ...prevData,
-            extrapersondays: rawValue,
-            payment_Booking: [updatedPaymentBooking],
-          };
-        });
-      };
-    const handleGstChange = (event) => {
-        const isChecked = event.target.checked;
-        setIsGstChecked(isChecked);
-        let newroomrent = isChecked 
-            ? parseFloat(roomrent) + parseFloat(extrapersoncost) + parseFloat(gstcost)
-            : parseFloat(roomrent) + parseFloat(extrapersoncost) - parseFloat(gstcost);
-        setRoomrent(round2(newroomrent));
-        
-        setFormData((prevData) => {
-            const paymentBooking = prevData.payment_Booking.length > 0 
-                ? prevData.payment_Booking[0] 
-                : { roomrent: 0, gst: 0, extra: 0, discper: 0, discamt: 0, total: 0, amountPaid: 0, amountDue: 0, paymentType: "" };
-    
-            const updatedPaymentBooking = {
-                ...paymentBooking, 
-                total: isChecked
-                    ? round2(parseFloat(paymentBooking.roomrent) + parseFloat(paymentBooking.extra) + parseFloat(gstcost))
-                    : round2(parseFloat(paymentBooking.roomrent) + parseFloat(paymentBooking.extra)),
-                gst: isChecked ? gstcost : 0, 
-            };
-    
-            return {
-                ...prevData,
-                payment_Booking: [updatedPaymentBooking], 
-            };
-        });
-    };
-
-    const handleExtraChange = (e) => {
-        const extraValuen = parseFloat(e.target.value) || 0;
-        setExtraValue(extraValuen);
-      
-        // Ensure baseRoomRent is treated as a number
-        const newActRoomRent = round2(parseFloat(baseRoomRent) + extraValuen);
-        setActRoomrent(newActRoomRent);
-        
-        const newTotal = round2(
-          newActRoomRent +
-            (parseFloat(extrapersoncost) || 0) -
-            (parseFloat(discvalue) || 0) +
-            (isGstChecked ? (parseFloat(gstcost) || 0) : 0)
-        );
-        setRoomrent(newTotal);
-      
-        setFormData((prevData) => {
-          const paymentBooking = prevData.payment_Booking.length > 0 
-            ? prevData.payment_Booking[0]
-            : {
-                roomrent: 0,
-                gst: 0,
-                extra: 0,
-                discper: 0,
-                discamt: 0,
-                total: 0,
-                amountPaid: 0,
-                amountDue: 0,
-                paymentType: ""
-              };
-      
-          const updatedPaymentBooking = {
-            ...paymentBooking,
-            total: newTotal,
-            extra: extraValuen,
-          };
-      
-          return {
-            ...prevData,
-            payment_Booking: [updatedPaymentBooking],
-          };
-        });
-      };      
-
-      const handleDiscChange = (event) => {
-        const discper = parseFloat(event.target.value) || 0;
-        
-        // Calculate the base sum: actroomrent + extraValue + (GST if checked)
-        const baseSum = parseFloat(actroomrent) + (isGstChecked ? parseFloat(gstcost) : 0);
-        
-        // Calculate discount based on the baseSum
-        const discval = round2((discper * baseSum) / 100);
-        
-        // Final room rent: (baseSum - discount) + extrapersoncost
-        // (Assuming extrapersoncost should be added as before)
-        const newRoomRent = round2(baseSum - discval + parseFloat(extrapersoncost));
-        
-        setRoomrent(newRoomRent);
-        setDiscvalue(discval);
-        
-        // Update the payment booking details accordingly
-        setFormData((prevData) => {
-          const paymentBooking = prevData.payment_Booking.length > 0 
-            ? prevData.payment_Booking[0]
-            : {
-                roomrent: 0,
-                gst: 0,
-                extra: 0,
-                discper: 0,
-                discamt: 0,
-                total: 0,
-                amountPaid: 0,
-                amountDue: 0,
-                paymentType: ""
-              };
-          
-          const updatedPaymentBooking = {
-            ...paymentBooking,
-            total: newRoomRent,
-            discper: discper,
-            discamt: discval,
-          };
-          
-          return {
-            ...prevData,
-            payment_Booking: [updatedPaymentBooking],
-          };
-        });
-      };
-      
-      
-
-    const handlePaymentChange = (event) => {
-        const paymentamt = event.target.value;
-        
-        setFormData((prevData) => {
-            const paymentBooking = prevData.payment_Booking[0];
-            let balanceAmt = round2(parseFloat(roomrent) - parseFloat(paymentamt));
-            
-            const updatedPaymentBooking = {
-                ...paymentBooking,
-                total: roomrent,
-                amountPaid: paymentamt,
-                amountDue: balanceAmt,
-            };
-        
-            return {
-                ...prevData,
-                payment_Booking: [updatedPaymentBooking],
-            };
-        });
-    };
-
-    const handlePaymentmodeChange = (event) => {
-        const selectedPaymentType = event.target.value; 
-        setFormData((prevData) => {
-            const paymentBooking = prevData.payment_Booking[0];
-            const updatedPaymentBooking = {
-                ...paymentBooking,
-                paymentType: selectedPaymentType
-            };
-    
-            return {
-                ...prevData,
-                payment_Booking: [updatedPaymentBooking],
-            };
-        });
-    };
-    
-
     const [formData, setFormData] = useState({
         staffid: "",
         hotelid: "",
@@ -617,6 +318,349 @@ export default function Newbooking({selectedHotel}){
         ],
         payment_Reserve: [],
     });
+    
+
+    const handleClose = () => {
+        setShowModal(false);
+        navigate("/booking");
+    };
+
+    const round2 = (num) => Math.round(num * 100) / 100;
+
+    const handleRoomTypeChange = (e) => {
+        const { name, value } = e.target;
+        setSelectedBedroom(value);
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleCheckindate = (date, dateString) => {
+        if (!date) return;
+        const formattedDate = date.format("YYYY-MM-DD HH:mm A");
+    
+        console.log("Selected Date & Time:", formattedDate);
+    
+        setFormData((prevData) => ({
+            ...prevData,
+            checkin_Booking: formattedDate,
+        }));
+    };
+
+    const handleChangePhone = (e) => {
+        const { name, value } = e.target;
+        const sanitizedValue = value.replace(/[^0-9]/g, ''); // Allow only numeric values
+        setFormData({ ...formData, [name]: sanitizedValue });
+      };
+
+    const handleRoomChange = (e) => {
+        if(selectedBedroom === ''){
+            alert("Select Room type AC or Non-AC");
+        }else{
+            const selectedBedtype = e.target.value;
+            setSelectedBedtype(selectedBedtype);
+            const selectedRoom = bedroomTypes.find((room) => room.type === selectedBedtype);
+            
+            let newRoomRent = Math.round(((Number(selectedRoom.rate) + Number(extrapersoncost) + Number(extraValue)) - Number(discvalue)));
+            let calsgst = Math.round(((Number(selectedRoom.rate) + Number(extrapersoncost) + Number(extraValue)) - Number(discvalue)) * 0.12);
+
+            if(selectedBedroom === 'AC'){
+                setBaseRoomRent(selectedRoom.rate);
+                setActRoomrent(newRoomRent);
+                setRoomrent(newRoomRent);
+            }else{
+                setRoomrent(newRoomRent);
+            }
+
+            setGstcost(calsgst);
+            setFormData((prevData) => ({
+                ...prevData,
+                bedType: selectedBedtype,
+                payment_Booking: [
+                    {
+                        ...prevData.payment_Booking[0],
+                        roomrent: selectedRoom.rate,
+                    },
+                ]
+            }));
+        }
+    }
+
+    const handleextrapersoncostChange = (e) => {
+        const experrate = e.target.value;
+        setExtrapersonrate(experrate);
+        
+        const calcExtraCost = Number(experrate) * Number(extrapersondays);
+        setExtrapersoncost(calcExtraCost);
+        
+        let newRoomRent = Math.round(((Number(baseRoomRent) + Number(calcExtraCost) + Number(extraValue)) - Number(discvalue)));
+        let calsgst = Math.round(((Number(baseRoomRent) + Number(calcExtraCost) + Number(extraValue)) - Number(discvalue)) * 0.12);
+        
+        setGstcost(calsgst);
+        setActRoomrent(newRoomRent);
+
+        if (isGstChecked) {
+          newRoomRent = Number(newRoomRent)+Number(calsgst);
+        }
+        
+        setRoomrent(newRoomRent);
+      
+        setFormData((prevData) => {
+          const paymentBooking = prevData.payment_Booking.length > 0 
+            ? prevData.payment_Booking[0]
+            : {
+                roomrent: 0,
+                gst: 0,
+                extra: 0,
+                discper: 0,
+                discamt: 0,
+                total: 0,
+                amountPaid: 0,
+                amountDue: 0,
+                paymentType: ""
+              };
+      
+          const updatedPaymentBooking = {
+            ...paymentBooking,
+            total: newRoomRent,
+            extra: Number(extraValue),
+          };
+      
+          return {
+            ...prevData,
+            extrapersoncharge: calcExtraCost,
+            extrapersondays: extrapersondays,
+            payment_Booking: [updatedPaymentBooking],
+          };
+        });
+      };
+          
+      const handleextrapersondayChange = (e) => {
+        const experdays = e.target.value;
+        setExtrapersondays(experdays);
+        
+        const calcExtraCost = Number(extrapersonrate) * Number(experdays);
+        setExtrapersoncost(calcExtraCost);
+        
+        let newRoomRent = Math.round(((Number(baseRoomRent) + Number(calcExtraCost) + Number(extraValue)) - Number(discvalue)));
+        let calsgst = Math.round(((Number(baseRoomRent) + Number(calcExtraCost) + Number(extraValue)) - Number(discvalue)) * 0.12);
+        
+        setGstcost(calsgst);
+        setActRoomrent(newRoomRent);
+
+        if (isGstChecked) {
+          newRoomRent = Number(newRoomRent)+Number(calsgst);
+        }
+        
+        setRoomrent(newRoomRent);
+      
+        setFormData((prevData) => {
+          const paymentBooking = prevData.payment_Booking.length > 0 
+            ? prevData.payment_Booking[0]
+            : {
+                roomrent: 0,
+                gst: 0,
+                extra: 0,
+                discper: 0,
+                discamt: 0,
+                total: 0,
+                amountPaid: 0,
+                amountDue: 0,
+                paymentType: ""
+              };
+      
+          const updatedPaymentBooking = {
+            ...paymentBooking,
+            total: newRoomRent,
+            extra: Number(extraValue),
+          };
+      
+          return {
+            ...prevData,
+            extrapersondays: experdays,
+            payment_Booking: [updatedPaymentBooking],
+          };
+        });
+      };
+
+    const handleExtraChange = (e) => {
+        const getextravalue = parseFloat(e.target.value) || 0;
+        setExtraValue(Number(getextravalue));
+      
+        let newRoomRent = Math.round(((Number(baseRoomRent) + Number(extrapersoncost) + Number(getextravalue)) - Number(discvalue)));
+        let calsgst = Math.round(((Number(baseRoomRent) + Number(extrapersoncost) + Number(getextravalue)) - Number(discvalue)) * 0.12);
+        
+        setGstcost(calsgst);
+        setActRoomrent(newRoomRent);
+
+        if (isGstChecked) {
+          newRoomRent = Number(newRoomRent)+Number(calsgst);
+        }
+        
+        setRoomrent(newRoomRent);
+      
+        setFormData((prevData) => {
+          const paymentBooking = prevData.payment_Booking.length > 0 
+            ? prevData.payment_Booking[0]
+            : {
+                roomrent: 0,
+                gst: 0,
+                extra: 0,
+                discper: 0,
+                discamt: 0,
+                total: 0,
+                amountPaid: 0,
+                amountDue: 0,
+                paymentType: ""
+              };
+      
+          const updatedPaymentBooking = {
+            ...paymentBooking,
+            total: newRoomRent,
+            extra: getextravalue,
+          };
+      
+          return {
+            ...prevData,
+            payment_Booking: [updatedPaymentBooking],
+          };
+        });
+      };   
+
+    const handleDiscChange = (event) => {
+        const discPercentage = parseFloat(event.target.value) || 0;
+        const discDecimal = Number(discPercentage) / 100;
+
+        let newRoomRent_woDisc = Math.round(((Number(baseRoomRent) + Number(extrapersoncost) + Number(extraValue))));
+        const discamount = Math.round(Number(newRoomRent_woDisc)*Number(discDecimal));
+
+        let newRoomRent = Math.round(((Number(baseRoomRent) + Number(extrapersoncost) + Number(extraValue)) - Number(discamount)));
+        let calsgst = Math.round(((Number(baseRoomRent) + Number(extrapersoncost) + Number(extraValue)) - Number(discamount)) * 0.12);
+        setDiscvalue(discamount);
+        setGstcost(calsgst);
+
+        if (isGstChecked) {
+          newRoomRent = Number(newRoomRent)+Number(calsgst);
+        }
+        
+        setActRoomrent(newRoomRent);
+        setRoomrent(newRoomRent);
+        
+        setFormData((prevData) => {
+          const paymentBooking = prevData.payment_Booking.length > 0 
+            ? prevData.payment_Booking[0]
+            : {
+                roomrent: 0,
+                gst: 0,
+                extra: 0,
+                discper: 0,
+                discamt: 0,
+                total: 0,
+                amountPaid: 0,
+                amountDue: 0,
+                paymentType: ""
+              };
+          
+          const updatedPaymentBooking = {
+            ...paymentBooking,
+            total: newRoomRent,
+            discper: discPercentage,
+            discamt: discamount,
+          };
+          
+          return {
+            ...prevData,
+            payment_Booking: [updatedPaymentBooking],
+          };
+        });
+      };
+
+      const handleGstChange = (event) => {
+        const isChecked = event.target.checked;
+        setIsGstChecked(isChecked);
+
+        let newRoomRent = Math.round(((Number(baseRoomRent) + Number(extrapersoncost) + Number(extraValue)) - Number(discvalue)));
+        let calsgst = Math.round(((Number(baseRoomRent) + Number(extrapersoncost) + Number(extraValue)) - Number(discvalue)) * 0.12);
+
+        if (isChecked) {
+            newRoomRent = Number(newRoomRent)+Number(calsgst);
+        }
+
+        setActRoomrent(newRoomRent);
+        setRoomrent(newRoomRent);
+        
+        setFormData((prevData) => {
+            const paymentBooking = prevData.payment_Booking.length > 0 
+                ? prevData.payment_Booking[0] 
+                : { roomrent: 0, gst: 0, extra: 0, discper: 0, discamt: 0, total: 0, amountPaid: 0, amountDue: 0, paymentType: "" };
+    
+            const updatedPaymentBooking = {
+                ...paymentBooking, 
+                total: newRoomRent,
+                gst: calsgst, 
+            };
+    
+            return {
+                ...prevData,
+                payment_Booking: [updatedPaymentBooking], 
+            };
+        });
+    };
+
+    const handlePaymentChange = (event) => {
+        const paymentamt = event.target.value;
+        setBookingadvance(paymentamt);
+
+        let newRoomRent = Math.round(((Number(baseRoomRent) + Number(extrapersoncost) + Number(extraValue)) - Number(discvalue)));
+        let calsgst = Math.round(((Number(baseRoomRent) + Number(extrapersoncost) + Number(extraValue)) - Number(discvalue)) * 0.12);
+
+        if (isGstChecked) {
+            newRoomRent = Number(newRoomRent)+Number(calsgst);
+        }
+
+        setActRoomrent(newRoomRent);
+        let balanceAmt = Number(newRoomRent)-Number(paymentamt);
+        setRoomrent(balanceAmt);
+        
+        setFormData((prevData) => {
+            const paymentBooking = prevData.payment_Booking[0];
+            
+            const updatedPaymentBooking = {
+                ...paymentBooking,
+                total: newRoomRent,
+                amountPaid: paymentamt,
+                amountDue: balanceAmt,
+            };
+        
+            return {
+                ...prevData,
+                payment_Booking: [updatedPaymentBooking],
+            };
+        });
+    };
+
+    const handlePaymentmodeChange = (event) => {
+        const selectedPaymentType = event.target.value; 
+        setFormData((prevData) => {
+            const paymentBooking = prevData.payment_Booking[0];
+            const updatedPaymentBooking = {
+                ...paymentBooking,
+                paymentType: selectedPaymentType
+            };
+    
+            return {
+                ...prevData,
+                payment_Booking: [updatedPaymentBooking],
+            };
+        });
+    };
+
+    // --------------------------------------------------//
+
+
+    
+    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -708,53 +752,12 @@ export default function Newbooking({selectedHotel}){
         }
     };
 
-    const handleChangePhone = (e) => {
-        const { name, value } = e.target;
-        const sanitizedValue = value.replace(/[^0-9]/g, ''); // Allow only numeric values
-        setFormData({ ...formData, [name]: sanitizedValue });
-      };
+    
 
 
-    const handleRoomTypeChange = (e) => {
-        const { name, value } = e.target;
-        setSelectedBedroom(value);
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
-    const handleRoomChange = (e) => {
-        if(selectedBedroom === ''){
-            alert("Select Room type AC or Non-AC");
-        }else{
-            const selectedRoomtype = e.target.value;
-            setSelectedBedtype(selectedRoomtype);
-            const selectedRoom = bedroomTypes.find((room) => room.type === selectedRoomtype);
-            setIsGstChecked(false);
-            if(selectedBedroom === 'AC'){
-                setBaseRoomRent(selectedRoom.rate);
-                setActRoomrent(selectedRoom.rate);
-                setRoomrent(selectedRoom.rate);
 
 
-            }else{
-                setRoomrent(selectedRoom.acrate);
-            }
-            
-            setGstcost(selectedRoom.tax);
-            setFormData((prevData) => ({
-                ...prevData,
-                bedType: selectedRoomtype,
-                payment_Booking: [
-                    {
-                        ...prevData.payment_Booking[0],
-                        roomrent: selectedRoom.rate,
-                    },
-                ]
-            }));
-        }
-    }
+    
 
     return <>
             <div className="content-page">
@@ -790,6 +793,7 @@ export default function Newbooking({selectedHotel}){
                                                             <option value="Social Media">Social media</option>
                                                             <option value="Make My Trip">Make My Trip</option>
                                                             <option value="Friends and Family">Friends & Family </option>
+                                                            <option value="Goibibo">Goibibo</option>
                                                             <option value="Travel Agent">Travel Agent</option>
                                                             <option value="Walk-In">Walk-In</option>
                                                             <option value="Portal">Portal</option>
@@ -1028,18 +1032,10 @@ export default function Newbooking({selectedHotel}){
                                             <Col xs={24} sm={24} md={8} lg={8} xl={8} style={{textAlign:'right'}}>
                                                 <Row>
                                                     <Col xs={24} sm={24} md={9} lg={9} xl={9} >
-                                                        <p className="fs-18 fw-semibold text-blue pt-2">Room Rent : </p>
-                                                    </Col>
-                                                    <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                        <p className="fs-18 fw-semibold text-black pt-2">Rs {actroomrent}/- </p>
-                                                    </Col>
-                                                </Row>
-                                                <Row>
-                                                    <Col xs={24} sm={24} md={9} lg={9} xl={9} >
                                                         <p className="fs-18 fw-semibold text-blue pt-1">Extra Pax: </p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                        <p className="fs-18 fw-semibold text-black pt-1">Rs {extrapersoncost}/- </p>
+                                                        <p className="fs-18 fw-semibold text-black pt-1">INR {extrapersoncost}/- </p>
                                                     </Col>
                                                 </Row>
                                                 <Row>
@@ -1047,7 +1043,7 @@ export default function Newbooking({selectedHotel}){
                                                         <p className="fs-18 fw-semibold text-blue pt-1">Discount : </p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                        <p className="fs-18 fw-semibold text-black pt-1">Rs {discvalue}/- </p>
+                                                        <p className="fs-18 fw-semibold text-black pt-1">INR {discvalue}/- </p>
                                                     </Col>
                                                 </Row>
                                                 <Row>
@@ -1055,15 +1051,23 @@ export default function Newbooking({selectedHotel}){
                                                         <p className="fs-18 fw-semibold text-blue pt-1">GST :</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                        <p className="fs-18 fw-semibold text-black pt-1">Rs {isGstChecked ? gstcost : 0.00}/- </p>
+                                                        <p className="fs-18 fw-semibold text-black pt-1">INR {isGstChecked ? gstcost : 0.00}/- </p>
                                                     </Col>
                                                 </Row>
                                                 <Row>
                                                     <Col xs={24} sm={24} md={9} lg={9} xl={9} >
-                                                        <p className="fs-18 fw-semibold text-blue pt-1">Total :</p>
+                                                        <p className="fs-18 fw-semibold text-blue pt-2">Room Rent : </p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                        <p className="fs-18 fw-semibold text-black pt-1">Rs {roomrent}/- </p>
+                                                        <p className="fs-18 fw-semibold text-black pt-2">INR {actroomrent}/- </p>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col xs={24} sm={24} md={9} lg={9} xl={9} >
+                                                        <p className="fs-18 fw-semibold text-blue pt-1">Balance :</p>
+                                                    </Col>
+                                                    <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                        <p className="fs-18 fw-semibold text-black pt-1">INR {roomrent}/- </p>
                                                     </Col>
                                                 </Row>
                                             </Col>
