@@ -358,18 +358,27 @@ export default function Newbooking({selectedHotel}){
       };
           
       const handleextrapersondayChange = (e) => {
-        const experday = parseInt(e.target.value, 10) || 1;
+        const rawValue = e.target.value; // raw value from the input, might be an empty string
+        // Update formData so the controlled input shows what the user typed.
+        setFormData((prevData) => ({
+          ...prevData,
+          extrapersondays: rawValue,
+        }));
+        
+        // Use a fallback value of 1 for calculations if rawValue is empty or invalid.
+        const experday = rawValue === "" ? 1 : parseInt(rawValue, 10) || 1;
         setExtrapersondays(experday);
         
-        // Recalculate total extra person cost with updated days count.
+        // Recalculate total extra person cost based on the numeric value
         const calcExtraCost = round2(extrapersonrate * experday);
         setExtrapersoncost(calcExtraCost);
         
-        // Calculate new final room rent with updated extra person cost.
+        // Calculate new final room rent using your existing logic.
         let newRoomRent = 0;
         if (isGstChecked) {
           newRoomRent = round2(
             Number(actroomrent) +
+            Number(extraValue) +
             Number(gstcost) +
             calcExtraCost -
             Number(discvalue)
@@ -377,6 +386,7 @@ export default function Newbooking({selectedHotel}){
         } else {
           newRoomRent = round2(
             Number(actroomrent) +
+            Number(extraValue) +
             calcExtraCost -
             Number(discvalue)
           );
@@ -384,7 +394,7 @@ export default function Newbooking({selectedHotel}){
         
         setRoomrent(newRoomRent);
         
-        // Update formData including extrapersoncharge and extrapersondays
+        // Update formData with extrapersoncharge and payment booking.
         setFormData((prevData) => {
           const paymentBooking = prevData.payment_Booking.length > 0 
             ? prevData.payment_Booking[0]
@@ -408,14 +418,11 @@ export default function Newbooking({selectedHotel}){
       
           return {
             ...prevData,
-            extrapersoncharge: calcExtraCost, // update extra person charge
-            extrapersondays: experday,          // update extra person days
+            extrapersondays: rawValue,
             payment_Booking: [updatedPaymentBooking],
           };
         });
       };
-      
-
     const handleGstChange = (event) => {
         const isChecked = event.target.checked;
         setIsGstChecked(isChecked);
