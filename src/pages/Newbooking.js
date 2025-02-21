@@ -378,7 +378,6 @@ export default function Newbooking({selectedHotel}){
         if (isGstChecked) {
           newRoomRent = round2(
             Number(actroomrent) +
-            Number(extraValue) +
             Number(gstcost) +
             calcExtraCost -
             Number(discvalue)
@@ -386,7 +385,6 @@ export default function Newbooking({selectedHotel}){
         } else {
           newRoomRent = round2(
             Number(actroomrent) +
-            Number(extraValue) +
             calcExtraCost -
             Number(discvalue)
           );
