@@ -78,7 +78,7 @@ export default function Booking({selectedHotel, selectedDate}){
                                                     <tr key={booking.bookingNo}>
                                                         <td>{booking.bookingNo}</td>
                                                         <td>{booking.personName || 'N/A'}</td>
-                                                        <td>{new Date(booking.checkin_Booking).toLocaleDateString()}</td>
+                                                        <td>{new Date(booking.checkin_Booking).toLocaleDateString('en-GB', {timeZone: 'UTC'})}</td>
                                                         <td>{booking.payment_Booking[0]?.total || '0'}</td>
                                                         <td className='text-success fw-bold'>{booking.payment_Booking[0]?.amountPaid || '0'}</td>
                                                         <td className='text-danger fw-bolder'>{booking.payment_Booking[0]?.amountDue || '0'}</td>
