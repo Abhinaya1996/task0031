@@ -448,7 +448,7 @@ exports.getHotelBookings = async (req, res, next) => {
             hotelid: hotelid,
             checkInStatus: false,
             checkOutStatus: false,
-            addedAt: {
+            checkin_Booking: {
                 $gte: startOfDay, // Greater than or equal to the start of the day
                 $lte: endOfDay,   // Less than or equal to the end of the day
             },
