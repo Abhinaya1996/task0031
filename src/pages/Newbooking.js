@@ -665,10 +665,10 @@ export default function Newbooking({selectedHotel}){
         let formattedValue = value;
         
         // Capitalize first letter for all fields except email
-        // if (name !== "email") {
+        if (name !== "source") {
             console.log(name);
           formattedValue = value.toUpperCase();
-        // }
+        }
         
         setFormData((prevState) => ({
           ...prevState,
