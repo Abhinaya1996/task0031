@@ -338,15 +338,13 @@ export default function Newbooking({selectedHotel}){
 
     const handleCheckindate = (date, dateString) => {
         if (!date) return;
-        const formattedDate = date.format("YYYY-MM-DD HH:mm A");
-    
-        console.log("Selected Date & Time:", formattedDate);
-    
+        console.log("Selected Date & Time:", date);
+        
         setFormData((prevData) => ({
-            ...prevData,
-            checkin_Booking: formattedDate,
+          ...prevData,
+          checkin_Booking: date.toDate(), // Convert Moment object to native Date object
         }));
-    };
+      };
 
     const handleChangePhone = (e) => {
         const { name, value } = e.target;
@@ -667,10 +665,10 @@ export default function Newbooking({selectedHotel}){
         let formattedValue = value;
         
         // Capitalize first letter for all fields except email
-        if (name !== "email") {
+        // if (name !== "email") {
             console.log(name);
-          formattedValue = value.charAt(0).toUpperCase() + value.slice(1);
-        }
+          formattedValue = value.toUpperCase();
+        // }
         
         setFormData((prevState) => ({
           ...prevState,
