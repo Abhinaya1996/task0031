@@ -721,47 +721,98 @@ export default function Newbooking({selectedHotel}){
             }));
         }
     }, [loggedInUser,selectedHotel]);
+
+    const isEmptyCheckinDate = () => {
+        if (!formData.checkin_Booking) return true; // Not provided
+        // If it's a string, trim and check if it's empty
+        if (typeof formData.checkin_Booking === "string") {
+          return formData.checkin_Booking.trim() === "";
+        }
+        // If it's a Date object, check if it's invalid
+        if (formData.checkin_Booking instanceof Date) {
+          return isNaN(formData.checkin_Booking.getTime());
+        }
+        return false;
+      };
     
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!formData.source || formData.source.trim() === "") {
+            alert("Please select a source");
+            return;
+          }
+
+        if (!formData.personName || formData.personName.trim() === "") {
+            alert("Booking Person Name is required");
+            return;
+        }
+
+        if (!formData.mobile || formData.mobile.trim() === "") {
+            alert("Booking Person Phone Number is required");
+            return;
+        }
+      
         if (!formData.email || formData.email.trim() === "") {
-            alert("Email is required");
-            return;
+          alert("Email is required");
+          return;
+        }
+      
+        if (!selectedBedtype || selectedBedtype.trim() === "") {
+          alert("Please select Bed Type");
+          return;
         }
 
-        if (!formData.bedType || formData.bedType.trim() === "") {
-            alert("Please select Bed Type");
+        if (!formData.roomType || formData.roomType.trim() === "") {
+            alert("Room Type is required");
             return;
-        }
+          }
         
-        const updatedPaymentBooking = formData.payment_Booking.map((payment) => ({
-            ...payment,
-            amountDue: payment.amountDue === 0 ? payment.total : payment.amountDue,
-        }));
-
-        try {
-            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/new-booking`;
-            const headers = {
-                'Authorization': localStorage.getItem('token')
-            };
-            const response = await axios.post(url, formData, { headers });
-            if (response.data.success) {
-                setModalMessage("Booking successfully created");
-                const timer = setTimeout(() => {
-                    navigate('/booking');
-                }, 2000);
-            } else {
-                setModalMessage("Failed to create booking");
-            }
- 
-            setShowModal(true);
-        } catch (error) {
-            console.error("Error submitting booking:", error);
-            alert("An error occurred");
+          if (isEmptyCheckinDate()) {
+            alert("Check-in Date is required");
+            return;
+          }
+      
+        // Check if address field is empty.
+        if (!formData.address || formData.address.trim() === "") {
+          alert("Address is required");
+          return;
         }
-    };
+      
+        // Update payment_Booking details.
+        const updatedPaymentBooking = formData.payment_Booking.map((payment) => ({
+          ...payment,
+          amountDue: payment.amountDue === 0 ? payment.total : payment.amountDue,
+        }));
+      
+        // Update formData with updated payment_Booking array.
+        const updatedFormData = {
+          ...formData,
+          payment_Booking: updatedPaymentBooking,
+        };
+      
+        try {
+          const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/new-booking`;
+          const headers = {
+            Authorization: localStorage.getItem("token"),
+          };
+          const response = await axios.post(url, updatedFormData, { headers });
+          if (response.data.success) {
+            setModalMessage("Booking successfully created");
+            setTimeout(() => {
+              navigate("/booking");
+            }, 2000);
+          } else {
+            setModalMessage("Failed to create booking");
+          }
+      
+          setShowModal(true);
+        } catch (error) {
+          console.error("Error submitting booking:", error);
+          alert("An error occurred");
+        }
+      };      
 
     return <>
             <div className="content-page">
