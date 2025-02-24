@@ -336,6 +336,18 @@ export default function Newbooking({selectedHotel}){
         }));
     };
 
+    // const handleCheckindate = (date, dateString) => {
+    //     if (!date) return;
+    //     const formattedDate = date.format("YYYY-MM-DD HH:mm A");
+    
+    //     console.log("Selected Date & Time:", formattedDate);
+    
+    //     setFormData((prevData) => ({
+    //         ...prevData,
+    //         checkin_Booking: formattedDate,
+    //     }));
+    // };
+
     const handleCheckindate = (date, dateString) => {
         if (!date) return;
         console.log("Selected Date & Time:", date);
@@ -345,6 +357,7 @@ export default function Newbooking({selectedHotel}){
           checkin_Booking: date.toDate(), // Convert Moment object to native Date object
         }));
       };
+      
 
     const handleChangePhone = (e) => {
         const { name, value } = e.target;
@@ -750,13 +763,6 @@ export default function Newbooking({selectedHotel}){
         }
     };
 
-    
-
-
-
-
-    
-
     return <>
             <div className="content-page">
                 <div className="content">
@@ -1028,6 +1034,15 @@ export default function Newbooking({selectedHotel}){
                                             </Col>
                                             <Col xs={24} sm={24} md={4} lg={4} xl={4} ></Col>
                                             <Col xs={24} sm={24} md={8} lg={8} xl={8} style={{textAlign:'right'}}>
+
+                                                <Row>
+                                                    <Col xs={24} sm={24} md={9} lg={9} xl={9} >
+                                                        <p className="fs-18 fw-semibold text-blue pt-2">Room Rent : </p>
+                                                    </Col>
+                                                    <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                        <p className="fs-18 fw-semibold text-black pt-2">INR {Number(baseRoomRent)+Number(extraValue)}/- </p>
+                                                    </Col>
+                                                </Row>
                                                 <Row>
                                                     <Col xs={24} sm={24} md={9} lg={9} xl={9} >
                                                         <p className="fs-18 fw-semibold text-blue pt-1">Extra Pax: </p>
@@ -1054,7 +1069,7 @@ export default function Newbooking({selectedHotel}){
                                                 </Row>
                                                 <Row>
                                                     <Col xs={24} sm={24} md={9} lg={9} xl={9} >
-                                                        <p className="fs-18 fw-semibold text-blue pt-2">Room Rent : </p>
+                                                        <p className="fs-18 fw-semibold text-blue pt-2">Taxable Amount : </p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                         <p className="fs-18 fw-semibold text-black pt-2">INR {actroomrent}/- </p>
