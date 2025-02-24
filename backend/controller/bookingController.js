@@ -437,28 +437,42 @@ exports.getAllBookings = async (req, res, next) => {
 
 exports.getHotelBookings = async (req, res, next) => {
     try {
-        const { hotelid, date } = req.query;
-
-        // Ensure the date is in a consistent format
-        const startOfDay = moment(date).startOf('day').toISOString(); // Start of the selected date
-        const endOfDay = moment(date).endOf('day').toISOString();     // End of the selected date
-
-        // Find bookings matching the hotel ID and addedAt within the selected date range
-        const bookings = await bookingModel.find({
-            hotelid: hotelid,
-            checkInStatus: false,
-            checkOutStatus: false,
-            checkin_Booking: {
-                $gte: startOfDay, // Greater than or equal to the start of the day
-                $lte: endOfDay,   // Less than or equal to the end of the day
-            },
-        });
-
-        res.json({ success: true, bookings });
+      const { hotelid, date } = req.query;
+      const selectedDate = moment(date, 'YYYY-MM-DD');
+      const today = moment();
+  
+      let query;
+  
+      if (selectedDate.isSame(today, 'day')) {
+        // For the current date, list all bookings from start of the day onward.
+        const startOfDay = selectedDate.startOf('day').toISOString();
+        query = {
+          hotelid: hotelid,
+          checkInStatus: false,
+          checkOutStatus: false,
+          checkin_Booking: { $gte: startOfDay }
+        };
+      } else {
+        // For any other day, list bookings within that day only.
+        const startOfDay = selectedDate.startOf('day').toISOString();
+        const endOfDay = selectedDate.endOf('day').toISOString();
+        query = {
+          hotelid: hotelid,
+          checkInStatus: false,
+          checkOutStatus: false,
+          checkin_Booking: {
+            $gte: startOfDay,
+            $lte: endOfDay
+          }
+        };
+      }
+  
+      const bookings = await bookingModel.find(query);
+      res.json({ success: true, bookings });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
-};
+  };
 
 exports.getInhouseBookings = async (req, res, next) => {
     try {
