@@ -1036,7 +1036,7 @@ export default function Newbooking({selectedHotel}){
                                             <Col xs={24} sm={24} md={8} lg={8} xl={8} style={{textAlign:'right'}}>
 
                                                 <Row>
-                                                    <Col xs={24} sm={24} md={9} lg={9} xl={9} >
+                                                <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                         <p className="fs-18 fw-semibold text-blue pt-2">Room Rent : </p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
@@ -1044,7 +1044,7 @@ export default function Newbooking({selectedHotel}){
                                                     </Col>
                                                 </Row>
                                                 <Row>
-                                                    <Col xs={24} sm={24} md={9} lg={9} xl={9} >
+                                                <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                         <p className="fs-18 fw-semibold text-blue pt-1">Extra Pax: </p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
@@ -1052,7 +1052,7 @@ export default function Newbooking({selectedHotel}){
                                                     </Col>
                                                 </Row>
                                                 <Row>
-                                                    <Col xs={24} sm={24} md={9} lg={9} xl={9} >
+                                                <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                         <p className="fs-18 fw-semibold text-blue pt-1">Discount : </p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
@@ -1060,7 +1060,7 @@ export default function Newbooking({selectedHotel}){
                                                     </Col>
                                                 </Row>
                                                 <Row>
-                                                    <Col xs={24} sm={24} md={9} lg={9} xl={9} >
+                                                <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                         <p className="fs-18 fw-semibold text-blue pt-1">GST :</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
@@ -1068,7 +1068,7 @@ export default function Newbooking({selectedHotel}){
                                                     </Col>
                                                 </Row>
                                                 <Row>
-                                                    <Col xs={24} sm={24} md={9} lg={9} xl={9} >
+                                                    <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                         <p className="fs-18 fw-semibold text-blue pt-2">Taxable Amount : </p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
@@ -1076,7 +1076,7 @@ export default function Newbooking({selectedHotel}){
                                                     </Col>
                                                 </Row>
                                                 <Row>
-                                                    <Col xs={24} sm={24} md={9} lg={9} xl={9} >
+                                                <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                         <p className="fs-18 fw-semibold text-blue pt-1">Balance :</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
