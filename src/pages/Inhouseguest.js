@@ -253,13 +253,13 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                             <table className="table table-traffic mb-0">
                                                 <thead>
                                                     <tr>
-                                                        <th className="border-top-0 fw-semibold text-black">Bk.No</th>
+                                                        <th className="border-top-0 fw-semibold text-black">B.No</th>
                                                         <th className="border-top-0 fw-semibold text-black">Name</th>
                                                         <th className="border-top-0 fw-semibold text-black">Room No</th>
                                                         <th className="border-top-0 fw-semibold text-black">Check In</th>
                                                         <th className="border-top-0 fw-semibold text-black">Check Out</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Total Amount</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Due Amount</th>
+                                                        <th className="border-top-0 fw-semibold text-black">Total</th>
+                                                        <th className="border-top-0 fw-semibold text-black">Outstanding</th>
                                                         <th className="border-top-0 fw-semibold text-black">Status</th>
                                                         <th className="border-top-0 fw-semibold text-black">Pricing</th>
                                                         <th className="border-top-0 fw-semibold text-black">Action</th>
