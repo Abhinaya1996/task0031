@@ -52,6 +52,7 @@ const bookingSchema = new mongoose.Schema({
             extra: Number,
             discper:Number,
             discamt:Number,
+            isgst:String,
             gst: Number,
             total: Number,
             amountPaid: Number,
@@ -61,8 +62,12 @@ const bookingSchema = new mongoose.Schema({
     ],
     payment_Reserve: [
         {
+            roomrent: Number,
+            extra: Number,
             discper:Number,
             discamt:Number,
+            isgst:String,
+            gst: Number,
             addons:Number,
             total: Number,
             amountPaid: Number,
@@ -74,6 +79,8 @@ const bookingSchema = new mongoose.Schema({
     checkInStatus: { type: Boolean, default: false },
     checkOutStatus: { type: Boolean, default: false },
     addedAt: { type: Date, default: Date.now },
+    bookingnotes: String,
+    reservationNotes: String,
     notes: String
 });
 
