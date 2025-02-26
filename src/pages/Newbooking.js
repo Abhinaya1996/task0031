@@ -317,6 +317,7 @@ export default function Newbooking({selectedHotel}){
             },
         ],
         payment_Reserve: [],
+        bookingnotes: ""
     });
     
 
@@ -335,18 +336,6 @@ export default function Newbooking({selectedHotel}){
             [name]: value,
         }));
     };
-
-    // const handleCheckindate = (date, dateString) => {
-    //     if (!date) return;
-    //     const formattedDate = date.format("YYYY-MM-DD HH:mm A");
-    
-    //     console.log("Selected Date & Time:", formattedDate);
-    
-    //     setFormData((prevData) => ({
-    //         ...prevData,
-    //         checkin_Booking: formattedDate,
-    //     }));
-    // };
 
     const handleCheckindate = (date, dateString) => {
         if (!date) return;
@@ -609,6 +598,7 @@ export default function Newbooking({selectedHotel}){
             const updatedPaymentBooking = {
                 ...paymentBooking, 
                 total: newRoomRent,
+                isgst:isGstChecked,
                 gst: calsgst, 
             };
     
@@ -714,7 +704,7 @@ export default function Newbooking({selectedHotel}){
                 ...prevData,
                 staffid: loggedInUser,
                 hotelid: selectedHotel,
-                extnmob: "+1",
+                extnmob: "91",
                 guestCount: 2,
                 roomType: 'AC',
                 bedType: 'Single occupancy',
@@ -944,8 +934,6 @@ export default function Newbooking({selectedHotel}){
                                         </Row>
                                     </Col>
 
-
-
                                     <Col xs={24} sm={24} md={9} lg={9} xl={9}>
                                         <p className="fs-20 fw-semibold text-blue pt-3 m-0">Extra Pax -  {extrapersoncost}</p>
 
@@ -1008,6 +996,22 @@ export default function Newbooking({selectedHotel}){
                                                     <textarea className="form-control" name="address" rows="1" onChange={handleChange} value={formData.address}>
 
                                                     </textarea>
+                                                    </Col>
+                                                </Row>
+                                            </Col>
+                                        </Row>
+
+                                        <Row>
+                                            <Col xs={24} sm={24} md={24} lg={24} xl={24} className="pe-2">
+                                                <Row>
+                                                    <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                                                        <p className="fs-18 fw-semibold text-blue pt-3">Notes</p>
+                                                    </Col>
+                                                </Row>
+
+                                                <Row>
+                                                    <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                                                    <textarea className="form-control" name="bookingnotes" rows="1" onChange={handleChange} value={formData.bookingnotes}></textarea>
                                                     </Col>
                                                 </Row>
                                             </Col>
