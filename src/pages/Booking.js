@@ -64,12 +64,13 @@ export default function Booking({selectedHotel, selectedDate}){
                                             <table className="table table-traffic mb-0">
                                                 <thead className='text-center'>
                                                     <tr>
-                                                        <th className="border-top-0 fw-semibold text-black">Bk.No</th>
+                                                        <th className="border-top-0 fw-semibold text-black">B.No</th>
                                                         <th className="border-top-0 fw-semibold text-black">Name</th>
+                                                        <th className="border-top-0 fw-semibold text-black">Bed Type</th>
                                                         <th className="border-top-0 fw-semibold text-black">Check In</th>
                                                         <th className="border-top-0 fw-semibold text-black">Total Amount</th>
                                                         <th className="border-top-0 fw-semibold text-black">Amount Paid</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Due Amount</th>
+                                                        <th className="border-top-0 fw-semibold text-black">Outstanding</th>
                                                         <th className="border-top-0 fw-semibold text-black">Action</th>
                                                     </tr>
                                                 </thead>
@@ -78,14 +79,14 @@ export default function Booking({selectedHotel, selectedDate}){
                                                     <tr key={booking.bookingNo}>
                                                         <td>{booking.bookingNo}</td>
                                                         <td>{booking.personName || 'N/A'}</td>
+                                                        <td>{booking.bedType}</td>
                                                         <td>{new Date(booking.checkin_Booking).toLocaleDateString('en-GB', {timeZone: 'UTC'})}</td>
                                                         <td>{booking.payment_Booking[0]?.total || '0'}</td>
                                                         <td className='text-success fw-bold'>{booking.payment_Booking[0]?.amountPaid || '0'}</td>
-                                                        <td className='text-danger fw-bolder'>{booking.payment_Booking[0]?.amountDue || '0'}</td>
+                                                        <td className='text-danger fw-bolder'>{Number(booking.payment_Booking[0]?.total || 0)-Number(booking.payment_Booking[0]?.amountPaid || 0)}</td>
                                                         <td>
                                                             <a className="btn btn-secondary rounded-pill d-flex"
-                                                                href={`${process.env.REACT_APP_API_BASE_URL}/reservation?bk=${booking._id}`}
-                                                                style={{ marginLeft: '35%' }}
+                                                                href={`${`/reservation?bk=${booking._id}`}`}
                                                                 type="submit">
                                                                 Check-In
                                                             </a>
