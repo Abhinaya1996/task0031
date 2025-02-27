@@ -64,6 +64,7 @@ export default function Booking({selectedHotel, selectedDate}){
                                             <table className="table table-traffic mb-0">
                                                 <thead className='text-center'>
                                                     <tr>
+                                                        <th className="border-top-0 fw-semibold text-black">S.No</th>
                                                         <th className="border-top-0 fw-semibold text-black">B.No</th>
                                                         <th className="border-top-0 fw-semibold text-black">Name</th>
                                                         <th className="border-top-0 fw-semibold text-black">Bed Type</th>
@@ -75,8 +76,9 @@ export default function Booking({selectedHotel, selectedDate}){
                                                     </tr>
                                                 </thead>
                                                 <tbody className='text-center'>
-                                                    {bookings.map((booking) => (
+                                                    {bookings.map((booking,index) => (
                                                     <tr key={booking.bookingNo}>
+                                                        <td>{index+1}</td>
                                                         <td>{booking.bookingNo}</td>
                                                         <td>{booking.personName || 'N/A'}</td>
                                                         <td>{booking.bedType}</td>
