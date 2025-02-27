@@ -448,7 +448,7 @@ export default function Reservation({selectedHotel}){
             }));
         }
     }, [loggedInUser,selectedHotel,bookingId]);
-
+    
 
     const handleRoomTypeChange = (e) => {
         const { name, value } = e.target;
@@ -520,6 +520,20 @@ export default function Reservation({selectedHotel}){
         setBookingDetails({ ...bookingDetails, [name]: sanitizedValue });
       };
 
+      const fetchRooms = async (roomType) => {
+        try {
+            console.log(roomType);
+            let hotelName = selectedHotel;
+            const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+            const roomResponse = await axios.get(`${API_BASE_URL}/api/room/roomtypes`, {
+                params: { hotelName, roomType },
+            });
+            setRooms(roomResponse.data.rooms);
+        } catch (error) {
+            console.error("Error fetching room types:", error);
+        }
+    };
+
     const handleRoomChange = (e) => {
         if(selectedBedroom === ''){
             alert("Select Room type AC or Non-AC");
@@ -550,6 +564,7 @@ export default function Reservation({selectedHotel}){
                     },
                 ]
             }));
+            fetchRooms(selectedBedtype);
         }
     }
 
@@ -1105,7 +1120,7 @@ export default function Reservation({selectedHotel}){
                                             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
                                                 <Row>
                                                     <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                                                        <p className="fs-18 fw-semibold text-warning pt-3">Notes</p>
+                                                        <p className="fs-18 fw-semibold text-warning pt-3">Remarks</p>
                                                     </Col>
                                                 </Row>
 
