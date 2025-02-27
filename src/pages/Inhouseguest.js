@@ -378,7 +378,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                 <td>{booking.roomNumbers}</td>
                 <td>{checkinDate.toLocaleDateString()}</td>
                 <td>{booking.checkout ? checkoutDate.toLocaleDateString() : '-'}</td>
-                <td>{perDayCharge}</td>
+                <td>{expectedTotal}</td>
                 <td style={{ color: outstanding < 0 ? 'green' : 'red', fontWeight:'800'}}>{outstanding}</td> {/* Show negative values in green */}
                 <td onClick={() => handleShow(booking)}>
                     {booking.checkOutStatus ? 
