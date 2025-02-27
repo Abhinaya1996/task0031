@@ -502,46 +502,47 @@ exports.getAllBookings = async (req, res, next) => {
     }
 };
 
-
-
 exports.getHotelBookings = async (req, res, next) => {
     try {
-      const { hotelid, date } = req.query;
-      const selectedDate = moment(date, 'YYYY-MM-DD');
-      const today = moment();
-  
-      let query;
-  
-      if (selectedDate.isSame(today, 'day')) {
-        // For the current date, list all bookings from start of the day onward.
-        const startOfDay = selectedDate.startOf('day').toISOString();
-        query = {
-          hotelid: hotelid,
-          checkInStatus: false,
-          checkOutStatus: false,
-          checkin_Booking: { $gte: startOfDay }
-        };
-      } else {
-        // For any other day, list bookings within that day only.
-        const startOfDay = selectedDate.startOf('day').toISOString();
-        const endOfDay = selectedDate.endOf('day').toISOString();
-        query = {
-          hotelid: hotelid,
-          checkInStatus: false,
-          checkOutStatus: false,
-          checkin_Booking: {
-            $gte: startOfDay,
-            $lte: endOfDay
-          }
-        };
-      }
-  
-      const bookings = await bookingModel.find(query);
-      res.json({ success: true, bookings });
+        const { hotelid, date } = req.query;
+        const selectedDate = moment(date, 'YYYY-MM-DD');
+        const today = moment();
+
+        let query;
+
+        if (selectedDate.isSame(today, 'day')) {
+            // For the current date, list all bookings from start of the day onward.
+            const startOfDay = selectedDate.startOf('day').toISOString();
+            query = {
+                hotelid: hotelid,
+                checkInStatus: false,
+                checkOutStatus: false,
+                checkin_Booking: { $gte: startOfDay }
+            };
+        } else {
+            // For any other day, list bookings within that day only.
+            const startOfDay = selectedDate.startOf('day').toISOString();
+            const endOfDay = selectedDate.endOf('day').toISOString();
+            query = {
+                hotelid: hotelid,
+                checkInStatus: false,
+                checkOutStatus: false,
+                checkin_Booking: {
+                    $gte: startOfDay,
+                    $lte: endOfDay
+                }
+            };
+        }
+
+        // Sort bookings by `checkin_Booking` in ascending order (1)
+        const bookings = await bookingModel.find(query).sort({ checkin_Booking: 1 });
+
+        res.json({ success: true, bookings });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+        console.error("Error fetching hotel bookings:", err);
+        res.status(500).json({ message: err.message });
     }
-  };
+};
   
 
 exports.getInhouseBookings = async (req, res, next) => {
@@ -552,7 +553,7 @@ exports.getInhouseBookings = async (req, res, next) => {
             return res.status(400).json({ success: false, message: "Selected date is required." });
         }
 
-        // Convert selectedDate to start and end of the day in UTC
+        // Convert selectedDate to end of the day in UTC
         const selectedDateObj = new Date(selectedDate);
         selectedDateObj.setUTCHours(23, 59, 59, 999);
 
@@ -566,9 +567,10 @@ exports.getInhouseBookings = async (req, res, next) => {
             checkin_Booking: { 
                 $lte: selectedDateObj // Guests who checked in on or before the selected date
             }
-        });
+        })
+        .sort({ checkin_Reserve: 1 }); // Sort in ascending order
 
-        console.log("In-house Bookings found:", bookings);
+        console.log("Sorted In-house Bookings:", bookings);
 
         res.json({ success: true, bookings });
 
@@ -577,9 +579,6 @@ exports.getInhouseBookings = async (req, res, next) => {
         res.status(500).json({ message: err.message });
     }
 };
-
-
-
 
 
 exports.getGuesthistory = async (req, res, next) => {
