@@ -513,7 +513,6 @@ export default function Reservation({selectedHotel}){
         }
     }
       
-
     const handleChangePhone = (e) => {
         const { name, value } = e.target;
         const sanitizedValue = value.replace(/[^0-9]/g, ''); // Allow only numeric values
