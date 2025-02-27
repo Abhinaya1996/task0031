@@ -114,7 +114,7 @@ export default function GuestHistory({selectedHotel}){
                                                 </thead>
 
                                                 <tbody>
-                                                    {bookings.map((booking) => (
+                                                    {bookings.map((booking,index) => (
                                                     <tr key={booking.bookingNo}>
                                                         <td>{index+1}</td>
                                                         <td>{booking.bookingNo}</td>
