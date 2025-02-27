@@ -883,8 +883,8 @@ export default function Reservation({selectedHotel}){
             updatedGuestDetails[index].phone = value;
           } else if (name === 'guestname') {
             updatedGuestDetails[index].name = value;
-          } else if (name === 'guestAltMobile') {
-            updatedGuestDetails[index].altphone = value;
+          } else if (name === 'guestTitle') {
+            updatedGuestDetails[index].guestTitle = value;
           }
       
           return {
@@ -949,7 +949,7 @@ export default function Reservation({selectedHotel}){
                                                 </select>
                                             </Col>
                                             <Col xs={16} sm={16} md={5} lg={5} xl={5} className="pe-2 pt-2">
-                                                <input type="text" className="form-control" name="personName" onChange={handleChange} value={bookingDetails?.personName || ''} placeholder="Guest Name" autoComplete="off" />
+                                                <input type="text" className="form-control" name="personName" onChange={handleChange} value={bookingDetails?.personName || ''} placeholder="Booking Person Name" autoComplete="off" />
                                             </Col>
                                             <Col xs={12} sm={12} md={2} lg={2} xl={2} className="pe-2 pt-2">
                                             <select name="extnmob" className="form-control" onChange={handleChange}>
@@ -977,6 +977,14 @@ export default function Reservation({selectedHotel}){
                                         </Row>
                                         {Array.from({ length: bookingDetails?.guestCount || 0 }).map((_, index) => (
                                             <Row key={index}>
+                                                <Col xs={8} sm={8} md={1} lg={1} xl={1} className="pe-2 pt-2">
+                                                    <select className="form-select" name="guestTitle" onChange={handleGuestdetails} value={bookingDetails?.roomType} id="example-select">
+                                                        <option value="Mr.">Mr.</option>
+                                                        <option value="Mrs.">Mrs.</option>
+                                                        <option value="Miss.">Miss.</option>
+                                                        <option value="Ms.">Ms.</option>
+                                                    </select>
+                                                </Col>
                                                 <Col xs={24} sm={24} md={6} lg={6} xl={6} className="pe-2 pt-2">
                                                 <input
                                                     type="text"
@@ -998,18 +1006,6 @@ export default function Reservation({selectedHotel}){
                                                     onChange={handleGuestdetails}
                                                     placeholder="Mobile Number"
                                                     value={bookingDetails?.guestDetails?.[index]?.phone || ''}
-                                                     autoComplete="off"
-                                                />
-                                                </Col>
-                                                <Col xs={24} sm={24} md={6} lg={6} xl={6} className="pe-2 pt-2">
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    name="guestAltMobile"
-                                                    data-index={index}
-                                                    onChange={handleGuestdetails}
-                                                    placeholder="Alternate Mobile Number"
-                                                    value={bookingDetails?.guestDetails?.[index]?.altphone || ''}
                                                      autoComplete="off"
                                                 />
                                                 </Col>
@@ -1109,7 +1105,7 @@ export default function Reservation({selectedHotel}){
                                             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
                                                 <Row>
                                                     <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                                                        <p className="fs-18 fw-semibold text-warning pt-3">Remarks</p>
+                                                        <p className="fs-18 fw-semibold text-warning pt-3">Notes</p>
                                                     </Col>
                                                 </Row>
 
