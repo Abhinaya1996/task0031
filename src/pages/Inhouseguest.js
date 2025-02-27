@@ -7,6 +7,8 @@ import axios from 'axios';
 import '../assets/css/app.min.css';
 import '../assets/css/icons.min.css';
 import moment from 'moment';
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
 export default function Inhouseguest({selectedHotel, selectedDate}){
   const [showModal, setShowModal] = useState(false);
@@ -17,16 +19,29 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
   const [showPriceModal, setShowPriceModal] = useState(false);
   const [updatedAmount, setUpdatedAmount] = useState(0);
   const [newupdatedAmount, setnewUpdatedAmount] = useState(0);
-  const [checkoutdate, setCheckoutdate] = useState("");
-    const [checkouttime, setCheckouttime] = useState("");
-    const [checkout_ud, setCheckout_ud] = useState("AM");
-    const [checkoutdatetime, setCheckoutdatetime] = useState("");
+  const [checkoutDate, setCheckoutDate] = useState(dayjs().format("DD-MM-YYYY HH:mm"));
+
+  const [staydays, setStaydays] = useState(0);
+    const [newRoomNumber, setNewRoomNumber] = useState("");
+    const [bedroomTypes, setBedroomTypes] = useState([]);
 
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [updatedpayAmount, setUpdatedpayAmount] = useState(0);
   const [enteredAmount, setEnteredAmount] = useState("");
-  const [formData, setFormData] = useState({
-        payment_Reserve: selectedBooking?.payment_Reserve || []
+
+  const [baseRoomRent, setBaseRoomRent] = useState(0);
+  const [extraValue, setExtraValue] = useState(0);
+  const [extrapersoncost, setExtrapersoncost] = useState(0);
+  const [discper, setDiscper] = useState(0);
+  const [discvalue, setDiscvalue] = useState(0);
+  const [isGstChecked, setIsGstChecked] = useState(false);
+  const [gstcost, setGstcost] = useState('0.00');
+  const [actroomrent, setActRoomrent] = useState(0);
+  const [roomrent, setRoomrent] = useState(0);
+
+    const [formData, setFormData] = useState({
+        checkout: "",
+        payment_Reserve: selectedBooking?.payment_Reserve || [],
     });
 
   const navigate = useNavigate();
@@ -42,23 +57,15 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
         }
     };
 
-    const handleCheckoutdate = (e) => {
-        const inputName = e.target.name;
-        const inputValue = e.target.value;
-    
-        if (inputName === "checkoutdate") {
-            setCheckoutdate(inputValue);
-        } else if (inputName === "checkouttime") {
-            setCheckouttime(inputValue);
-        } else if (inputName === "checkout_ud") {
-            setCheckout_ud(inputValue);
+    const handleCheckoutdate = (date, dateString) => {
+        if (!date) {
+            console.error("Selected date is undefined");
+            return;
         }
+        console.log("Selected Date:", dateString); // Debugging
+        setCheckoutDate(dateString); // Assuming you have a state to store the date
+    };
     
-        const combinedDatetime_out = `${inputName === "checkoutdate" ? inputValue : checkoutdate} ${inputName === "checkouttime" ? inputValue : checkouttime} ${checkout_ud}`;
-        const formattedDate_out = moment(combinedDatetime_out, 'DD-MM-YYYY HH:mm A').format('YYYY-MM-DDTHH:mm:ss.sssZ');
-        console.log(formattedDate_out);
-        setCheckoutdatetime(formattedDate_out);
-    }
 
     const fetchBookings = async () => {
         try {
@@ -87,9 +94,26 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
         setnewUpdatedAmount(newAmountDue);
     };
 
+    const fetchBedroomTypes = async () => {
+        try {
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/room/bedtypes?hotelId=${selectedHotel}`;
+            const headers = {
+                headers: {
+                    'Authorization': localStorage.getItem('token')
+                }
+            }
+            const response = await axios.get(url, headers);
+            setBedroomTypes(response.data.bedroomTypes || []);
+        } catch (err) {
+            console.error('Error fetching bedroom types:', err);
+            setBedroomTypes([]);
+        }
+    };
+
     useEffect(() => {
 
     fetchBookings();
+    fetchBedroomTypes();
     }, [selectedHotel,selectedDate]); 
 
     const handlePriceShow = (booking) => {
@@ -101,28 +125,24 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
 
     const handleCheckoutShow = (booking) => {
         setSelectedBooking(booking);
-        setUpdatedAmount(booking.payment_Reserve[0]?.amountDue || 0);
-        setnewUpdatedAmount(booking.payment_Reserve[0]?.amountDue || 0);
+    
+        const now = dayjs(); // Get the current date & time
+    
+        setCheckoutDate(now.format("DD-MM-YYYY HH:mm")); // Store both date & time in one state
 
-        const dateObj = new Date();  // Get the current date and time
+        setBaseRoomRent(booking.payment_Reserve[0]?.roomrent ?? 0);
+        setExtraValue(booking.payment_Reserve[0]?.extra ?? 0);
+        setExtrapersoncost(booking?.extrapersoncharge ?? 0);
+        setDiscper(booking.payment_Reserve[0]?.discper ?? 0);
+        setDiscvalue(booking.payment_Reserve[0]?.discamt ?? 0);
+        setIsGstChecked(!!booking.payment_Reserve[0]?.gst);
+        setGstcost(booking.payment_Reserve[0]?.gst ?? 0);
+        setActRoomrent(booking.payment_Reserve[0]?.total ?? 0);
+        setRoomrent(booking.payment_Reserve[0]?.amountDue ?? 0);
 
-        const formattedDate = dateObj.toLocaleDateString("en-GB"); // Format date as DD-MM-YYYY
-        const formattedTime = (() => {
-            let hours = dateObj.getHours();
-            const minutes = String(dateObj.getMinutes()).padStart(2, "0");
-            hours = hours % 12 || 12;  // Convert hours to 12-hour format
-            return `${String(hours).padStart(2, "0")}:${minutes}`;
-        })();
-
-        const period = dateObj.getHours() >= 12 ? "PM" : "AM";
-
-        setCheckoutdate(formattedDate);
-        setCheckouttime(formattedTime);
-        setCheckout_ud(period);
-        setCheckoutdatetime(dateObj); 
-
+    
         setShowCheckoutModal(true);
-    }
+    };    
 
   const handleShow = (booking) => {
     setSelectedBooking(booking);
@@ -203,40 +223,96 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
         }
   }
 
-  const handleCheckout = async (bookingId) => {
-    try {
-        if (!bookingId || !checkoutdatetime) {
-            alert("Booking ID and checkout date are required.");
-            return;
+    const handleCheckout = async (bookingId) => {
+        try {
+            if (!bookingId || !checkoutDate) {
+                alert("Booking ID and checkout date are required.");
+                return;
+            }
+
+            const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/checkout`;
+            const headers = {
+                Authorization: localStorage.getItem('token'),
+                'Content-Type': 'application/json',
+            };
+
+            const requestData = {
+                bookingNo: bookingId,
+                checkout: checkoutDate,
+            };
+
+            const response = await axios.post(url, requestData, { headers });
+
+            if (response?.data?.success) {
+                alert("Checkout successful!");
+                navigate('/guesthistory');
+            } else {
+                alert(response?.data?.message || "Checkout failed. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error submitting booking:", error);
+
+            const errorMessage =
+                error.response?.data?.message || "An unexpected error occurred. Please try again.";
+            alert(errorMessage);
         }
+    };
+    const handlePaymentmodeChange = (event) => {
 
-        const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/checkout`;
-        const headers = {
-            Authorization: localStorage.getItem('token'),
-            'Content-Type': 'application/json',
-        };
-
-        const requestData = {
-            bookingNo: bookingId,
-            checkout: checkoutdatetime,
-        };
-
-        const response = await axios.post(url, requestData, { headers });
-
-        if (response?.data?.success) {
-            alert("Checkout successful!");
-            navigate('/guesthistory');
-        } else {
-            alert(response?.data?.message || "Checkout failed. Please try again.");
-        }
-    } catch (error) {
-        console.error("Error submitting booking:", error);
-
-        const errorMessage =
-            error.response?.data?.message || "An unexpected error occurred. Please try again.";
-        alert(errorMessage);
     }
-};
+
+    const handleExtraChange = (e) => {
+        const extvalue = e.target.value;
+
+        setExtraValue(extvalue);
+      };   
+
+    const handleDiscChange = (e) => {
+        const discvalper = e.target.value;
+        let discamtt = Number(actroomrent)*(Number(discvalper)/100);
+
+      };
+
+      const handleGstChange = (event) => {
+        
+    };
+
+        const handleShiftRoom = async (bookingNum) => {
+            // if (!newRoomNumber) {
+            // alert("Please enter a new room number.");
+            // return;
+            // }
+            // try {
+            
+            // const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/shift-room`;
+            // const headers = {
+            //     Authorization: localStorage.getItem('token'),
+            //     'Content-Type': 'application/json',
+            // };
+
+            // const requestData = {
+            //     oldBookingId: bookingNum,
+            //     newRoomNumber: newRoomNumber,
+            // };
+
+            // const response = await axios.post(url, requestData, { headers });
+
+            // if (response?.data?.success) {
+            //     alert("Room shifted successfully!");
+            // } else {
+            //     alert(response?.data?.message || "Checkout failed. Please try again.");
+            // }
+
+            // } catch (error) {
+            // console.error("Error shifting room:", error);
+            // alert("Error shifting room: " + error.response?.data?.message);
+            // }
+        };
+
+        const handleRoomChange = (e) => {
+            
+        }
+        
 
 
 
@@ -269,35 +345,58 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                 </thead>
 
                                                 <tbody>
-                                                    {bookings.map((booking,index) => (
-                                                    <tr key={booking.bookingNo}>
-                                                        <td>{index+1}</td>
-                                                        <td>{booking.bookingNo}</td>
-                                                        <td>{booking.personName || 'N/A'}</td>
-                                                        <td>{booking.roomNumbers}</td>
-                                                        <td>{new Date(booking.checkin_Booking).toLocaleDateString()}</td>
-                                                        <td>{booking.checkout ? new Date(booking.checkout).toLocaleDateString() : '-'}</td>
-                                                        <td>{booking.payment_Reserve[0]?.total || '0'}</td>
-                                                        <td>{booking.payment_Reserve[0]?.amountDue || '0'}</td>
-                                                        <td onClick={() => handleShow(booking)} >
-                                                            {booking.checkOutStatus ? <p className='btn btn-danger rounded-pill'>Completed</p> : <p class="btn btn-primary rounded-pill" style={{marginBottom:0}} >View Details</p>}
-                                                        </td>
-                                                        <td onClick={() => handlePriceShow(booking)}>
-                                                            <button className='btn btn-warning rounded-pill'>Price update</button>
-                                                        </td>
-                                                        <td onClick={() => handleCheckoutShow(booking)}>
-                                                            <button className='btn btn-danger rounded-pill'>Checkout</button>
-                                                        </td>
-                                                        {/* <td>
-                                                            <a className="btn btn-secondary rounded-pill d-flex"
-                                                                href={`http://localhost:3000/reservation?bk=${booking._id}`}
-                                                                type="submit">
-                                                                Edit
-                                                            </a>
-                                                        </td> */}
-                                                    </tr>
-                                                    ))}
-                                                </tbody>
+    {bookings.map((booking, index) => {
+        const checkinDate = new Date(booking.checkin_Reserve);
+        const checkoutDate = booking.checkout ? new Date(booking.checkout) : new Date(); // Use today if no checkout date
+
+        // Calculate number of days
+        const numDays = Math.max(1, Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24)));
+
+        // Get per day charge
+        const perDayCharge = Number(booking.payment_Reserve[0]?.total || 0);
+
+        // Calculate total expected amount
+        const expectedTotal = numDays * perDayCharge;
+
+        // Sum all `amountPaid` from `payment_Reserve`
+        const totalPaidFromReserve = booking.payment_Reserve?.reduce((sum, payment) => sum + Number(payment.amountPaid || 0), 0) || 0;
+
+        // Get `amountPaid` from `payment_Booking`
+        const amountPaidFromBooking = booking.payment_Booking?.reduce((sum, payment) => sum + Number(payment.amountPaid || 0), 0) || 0;
+
+        // Calculate total amount paid
+        const totalAmountPaid = totalPaidFromReserve + amountPaidFromBooking;
+
+        // Calculate outstanding amount (can be negative if overpaid)
+        const outstanding = expectedTotal - totalAmountPaid;
+
+        return (
+            <tr key={booking.bookingNo}>
+                <td>{index + 1}</td>
+                <td>{booking.bookingNo}</td>
+                <td>{booking.personName || 'N/A'}</td>
+                <td>{booking.roomNumbers}</td>
+                <td>{checkinDate.toLocaleDateString()}</td>
+                <td>{booking.checkout ? checkoutDate.toLocaleDateString() : '-'}</td>
+                <td>{perDayCharge}</td>
+                <td style={{ color: outstanding < 0 ? 'green' : 'red', fontWeight:'800'}}>{outstanding}</td> {/* Show negative values in green */}
+                <td onClick={() => handleShow(booking)}>
+                    {booking.checkOutStatus ? 
+                        <p className='btn btn-danger rounded-pill'>Completed</p> : 
+                        <p className="btn btn-primary rounded-pill" style={{ marginBottom: 0 }}>View Details</p>
+                    }
+                </td>
+                <td onClick={() => handlePriceShow(booking)}>
+                    <button className='btn btn-warning rounded-pill'>Price update</button>
+                </td>
+                <td onClick={() => handleCheckoutShow(booking)}>
+                    <button className='btn btn-danger rounded-pill'>Checkout</button>
+                </td>
+            </tr>
+        );
+    })}
+</tbody>
+
                                             </table>
                                         </div>
 
@@ -312,28 +411,28 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                 <Row>
                                                     <Col xs={24} sm={24} md={12} lg={12} xl={12}>
                                                     <Row>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <p><b className='text-danger'>Customer Name :</b></p>
                                                         </Col>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                        <Col xs={24} sm={24} md={18} lg={18} xl={18}>
                                                         <p>{selectedBooking.personName}</p>
                                                         </Col>
                                                     </Row>
 
                                                     <Row>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <p><b className='text-danger'>Address :</b></p>
                                                         </Col>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                        <Col xs={24} sm={24} md={17} lg={17} xl={17}>
                                                         <p>{selectedBooking.address}</p>
                                                         </Col>
                                                     </Row>
 
                                                     <Row>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <p><b className='text-danger'>Check In Date :</b></p>
                                                         </Col>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                        <Col xs={24} sm={24} md={18} lg={18} xl={18}>
                                                         <p>{new Date(selectedBooking.checkin_Booking).toLocaleString("en-US", {
                                                                 day: "2-digit",
                                                                 month: "2-digit",
@@ -346,10 +445,10 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                     </Row>
 
                                                     <Row>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <p><b className='text-danger'>Checkout Date :</b></p>
                                                         </Col>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                        <Col xs={24} sm={24} md={18} lg={18} xl={18}>
                                                         <p>{new Date(selectedBooking.checkout).toLocaleString("en-US", {
                                                                 day: "2-digit",
                                                                 month: "2-digit",
@@ -362,19 +461,19 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                     </Row>
 
                                                     <Row>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <p><b className='text-danger'>Room Type :</b></p>
                                                         </Col>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                        <Col xs={24} sm={24} md={18} lg={18} xl={18}>
                                                         <p>{selectedBooking.bedType}</p>
                                                         </Col>
                                                     </Row>
 
                                                     <Row>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <p><b className='text-danger'>AC / Non AC :</b></p>
                                                         </Col>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                        <Col xs={24} sm={24} md={18} lg={18} xl={18}>
                                                         <p>{selectedBooking.roomType}</p>
                                                         </Col>
                                                     </Row>
@@ -383,19 +482,19 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                     <Col xs={24} sm={24} md={12} lg={12} xl={12}>
 
                                                     <Row>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <p><b className='text-danger'>Email Address :</b></p>
                                                         </Col>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                        <Col xs={24} sm={24} md={18} lg={18} xl={18}>
                                                         <p>{selectedBooking.email}</p>
                                                         </Col>
                                                     </Row>
 
                                                     <Row>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <p><b className='text-danger'>Mobile Number :</b></p>
                                                         </Col>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                        <Col xs={24} sm={24} md={18} lg={18} xl={18}>
                                                         <p>{selectedBooking.mobile}</p>
                                                         </Col>
                                                     </Row>
@@ -404,34 +503,53 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                     <Row>
                                                     </Row>
 
-                                                    <Row>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-                                                        <p><b className='text-danger'>Shifting Room :</b></p>
-                                                        </Col>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-                                                        <p>-</p>
-                                                        </Col>
-                                                    </Row>
-
 
                                                     <Row>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <p><b className='text-danger'>Room Number :</b></p>
                                                         </Col>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                        <Col xs={24} sm={24} md={18} lg={18} xl={18}>
                                                         <p>{selectedBooking.roomNumbers}</p>
                                                         </Col>
                                                     </Row>
+                                                    {/* <hr/> */}
+                                                    {/* <Row>
+                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+                                                        <p><b className='text-danger'>Bed type :</b></p>
+                                                        </Col>
+                                                        <Col className="pe-2" xs={24} sm={24} md={14} lg={14} xl={14}>
+                                                        <select className="form-select" name="bedType" onChange={handleRoomChange} value={formData.bedType} id="example-select">
+                                                            <option>Select Option</option>
+                                                            {bedroomTypes.map((room, index) => (
+                                                                <option key={index} value={room.type}>
+                                                                    {room.type}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                        </Col>
+                                                    </Row> */}
+
+                                                    {/* <Row>
+                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+                                                        <p><b className='text-danger'>Shifting to :</b></p>
+                                                        </Col>
+                                                        <Col className="pe-2" xs={24} sm={24} md={14} lg={14} xl={14}>
+                                                        <p><input type='text' className='form-control' placeholder="Enter new room number" value={newRoomNumber} onChange={(e) => setNewRoomNumber(e.target.value)}/></p>
+                                                        </Col>
+                                                        <Col xs={24} sm={24} md={4} lg={4} xl={4}>
+                                                        <Button className='btn btn-primary rounded-pill' onClick={() => {handleShiftRoom(selectedBooking.bookingNo)}}>Shift Now</Button>
+                                                        </Col>
+                                                    </Row> */}
 
 
-                                                    <Row>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                    {/* <Row>
+                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <p><b className='text-danger'>Shifted Room Rent :</b></p>
                                                         </Col>
-                                                        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                        <Col xs={24} sm={24} md={18} lg={18} xl={18}>
                                                         <p>-</p>
                                                         </Col>
-                                                    </Row>
+                                                    </Row> */}
 
                                                     </Col>
                                                 </Row>
@@ -447,7 +565,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
 
                                                         <Row>
                                                             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-                                                            <p><b className='text-danger'>Total Room Rent </b></p>
+                                                            <p><b className='text-danger'>Room Rent </b></p>
                                                             </Col>
                                                             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
                                                             <p>{selectedBooking.payment_Reserve[0]?.total}</p>
@@ -456,19 +574,28 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
 
                                                         <Row>
                                                             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-                                                            <p><b className='text-danger'>GST </b></p>
+                                                            <p><b className='text-danger'>Extra Pax </b></p>
                                                             </Col>
                                                             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-                                                            <p>{selectedBooking.payment_Booking[0]?.gst}</p>
+                                                            <p>{selectedBooking?.extrapersoncharge}</p>
                                                             </Col>
                                                         </Row>
 
                                                         <Row>
                                                             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-                                                            <p><b className='text-danger'>Payment Method</b></p>
+                                                            <p><b className='text-danger'>Discount </b></p>
                                                             </Col>
                                                             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-                                                            <p>{selectedBooking.payment_Booking[0]?.paymentType}</p>
+                                                            <p>{selectedBooking.payment_Reserve[0]?.discamt}</p>
+                                                            </Col>
+                                                        </Row>
+
+                                                        <Row>
+                                                            <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                            <p><b className='text-danger'>GST(12%) </b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+                                                            <p>{selectedBooking.payment_Reserve[0]?.gst}</p>
                                                             </Col>
                                                         </Row>
                                                     </Col>
@@ -480,8 +607,22 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                         </Row>
 
                                                         <Row>
-                                                            <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-                                                            <p><b className='text-primary'>{selectedBooking.payment_Booking[0]?.amountPaid}</b>{` paid on ${new Date(selectedBooking.addedAt).toLocaleString()}`}</p>
+                                                            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                                                            {selectedBooking.payment_Booking[0]?.amountPaid > 0 && (
+                                                                <p>
+                                                                    <b className="text-primary">
+                                                                    {selectedBooking.payment_Booking[0]?.amountPaid}
+                                                                    </b>
+                                                                    {` advance paid on ${new Date(selectedBooking.addedAt).toLocaleString('en-US', {
+                                                                    day: '2-digit',
+                                                                    month: '2-digit',
+                                                                    year: 'numeric',
+                                                                    hour: 'numeric',
+                                                                    minute: 'numeric',
+                                                                    hour12: true,
+                                                                    })} via ${selectedBooking.payment_Booking[0]?.paymentType}`}
+                                                                </p>
+                                                                )}
                                                             </Col>
                                                         </Row>
 
@@ -495,7 +636,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                                             {payment.payedon ? ` paid on ${new Date(payment.payedon).toLocaleString()}` : " "}
                                                                           </>
                                                                           
-                                                                            : <span>No payment made yet</span>}
+                                                                            : <span>No payments made yet</span>}
                                                                     </p>
                                                                 </Col>
                                                             </Row>
@@ -503,7 +644,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
 
 
                                                     </Col>
-                                                    <Col xs={24} sm={24} md={9} lg={9} xl={9}>
+                                                    {/* <Col xs={24} sm={24} md={9} lg={9} xl={9}>
                                                         <Row>
                                                             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
                                                             <p><b className='text-danger'>Paid Advance Amount :</b></p>
@@ -530,7 +671,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                             <p><b>{selectedBooking.payment_Booking[0]?.amountPaid + selectedBooking.payment_Reserve[0]?.amountPaid}</b></p>
                                                             </Col>
                                                         </Row>
-                                                    </Col>
+                                                    </Col> */}
                                                 </Row>
                                                 </>
                                             )}
@@ -608,10 +749,10 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                     <Col xs={24} sm={24} md={3} lg={3} xl={3}>
                                                         <p>Checkin Date :</p>
                                                     </Col>
-                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+                                                    <Col xs={24} sm={24} md={5} lg={5} xl={5}>
                                                         <input
                                                             type="text"
-                                                            value={new Date(selectedBooking?.checkin_Booking).toLocaleDateString()}
+                                                            value={new Date(selectedBooking?.checkin_Booking).toLocaleString()}
                                                             readOnly
                                                             className="form-control"
                                                         />
@@ -621,43 +762,149 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                         <p>Checkout date  :</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+                                                        <DatePicker
+                                                            showTime={{ use12Hours: false, minuteStep: 15 }}
+                                                            format="DD-MM-YYYY HH:mm"
+                                                            placeholder="Select Date & Time"
+                                                            value={checkoutDate ? dayjs(checkoutDate, "DD-MM-YYYY HH:mm") : null}
+                                                            onChange={handleCheckoutdate}
+                                                            className="form-control"
+                                                            getPopupContainer={(trigger) => trigger.parentNode}
+                                                        />
+                                                    </Col>
+                                                </Row>
+                                                <hr/>
+                                                <Row>
+                                                    <Col xs={24} sm={24} md={12} lg={12} xl={12}>
                                                         <Row>
-                                                            <Col xs={24} sm={24} md={12} lg={12} xl={12} className="pe-2">
-                                                                <InputMask
-                                                                    mask="99-99-9999"
-                                                                    placeholder="DD-MM-YYYY"
-                                                                    name="checkoutdate"
-                                                                    onChange={(e) => handleCheckoutdate(e)}
-                                                                    className="form-control"
-                                                                    value={checkoutdate || ""}
-                                                                    autoComplete="off"
-                                                                />
+                                                            <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+                                                                <p><b className='text-black'>Extra :</b></p>
                                                             </Col>
-                                                            <Col xs={24} sm={24} md={6} lg={6} xl={6} className="pe-2">
-                                                                <InputMask
-                                                                    mask="99:99"
-                                                                    placeholder="HH:MM"
-                                                                    className="form-control"
-                                                                    name="checkouttime"
-                                                                    onChange={(e) => handleCheckoutdate(e)}
-                                                                    value={checkouttime || ""}
-                                                                    autoComplete="off"
-                                                                />
+                                                            <Col xs={24} sm={24} md={15} lg={15} xl={15}>
+                                                            <p><input type="text" name="bokingpayment" value={extraValue} onChange={handleExtraChange} className="form-control mt-2" placeholder="00.00" autoComplete="off"/></p>
                                                             </Col>
-                                                            <Col xs={24} sm={24} md={4} lg={4} xl={4} className="pe-2">
-                                                                <select
-                                                                    className="form-select"
-                                                                    id="example-select"
-                                                                    name="checkout_ud"
-                                                                    onChange={(e) => handleCheckoutdate(e)}
-                                                                    value={checkout_ud || "AM"}
-                                                                >
-                                                                    <option>AM</option>
-                                                                    <option>PM</option>
-                                                                </select>
+                                                        </Row>
+
+                                                        <Row>
+                                                        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+                                                                <p><b className='text-black'>Disc% ({discvalue}):</b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={15} lg={15} xl={15}>
+                                                            <p><input type="text" name="discper" value={discper} onChange={handleDiscChange} className="form-control mt-2" placeholder="00.00" autoComplete="off"/></p>
+                                                            </Col>
+                                                        </Row>
+
+                                                        <Row>
+                                                        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+                                                                <p><b className='text-black'>GST :</b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={15} lg={15} xl={15}>
+                                                            <p><input className="form-check-input" style={{verticalAlign:'middle', marginTop: '-8px', marginRight:'5px'}} checked={isGstChecked} onChange={handleGstChange} type="checkbox" value="" id="flexCheckDefault"/>
+                                                            <label className="form-check-label" htmlFor="flexCheckDefault"><p className="fs-18 fw-bold text-warning pt-3">Add GST ({gstcost})</p></label></p>
+                                                            </Col>
+                                                        </Row>
+
+                                                        <Row>
+                                                            <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+                                                                <p><b className='text-black'>Payment :</b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={15} lg={15} xl={15}>
+                                                            <p><input type='text' className='form-control'/></p>
+                                                            </Col>
+                                                        </Row>
+
+                                                        <Row>
+                                                            <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+                                                                <p><b className='text-black'>Payment Mode :</b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={12} lg={12} xl={12} >
+                                                                <div className="col-sm-11 d-flex gap-4">
+                                                                    <div className="form-check">
+                                                                        <input className="form-check-input" type="radio" name="gridRadios" onChange={handlePaymentmodeChange} id="gridRadios1" value="UPI"/>
+                                                                        <label className="form-check-label" htmlFor="gridRadios1">
+                                                                            UPI
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="form-check">
+                                                                        <input className="form-check-input" type="radio" name="gridRadios" onChange={handlePaymentmodeChange} id="gridRadios2" value="Card"/>
+                                                                        <label className="form-check-label" htmlFor="gridRadios2">
+                                                                            Card
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="form-check disabled">
+                                                                        <input className="form-check-input" type="radio" name="gridRadios" onChange={handlePaymentmodeChange} id="gridRadios3" value="Cash"/>
+                                                                        <label className="form-check-label" htmlFor="gridRadios3">
+                                                                            Cash
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </Col>
+                                                        </Row>
+
+                                                    </Col>
+                                                    <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+
+
+                                                        <Row>
+                                                        <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                            <p><b className='text-black'>Base Room Rent : </b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                            <p><b className='text-black'>INR {Number(baseRoomRent)}/- </b></p>
+                                                            </Col>
+                                                        </Row>
+
+                                                        <Row>
+                                                        <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                            <p><b className='text-black'>Room Rent : </b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                            <p><b className='text-black'>INR {Number(baseRoomRent)+Number(extraValue)}/- </b></p>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row>
+                                                        <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                                <p><b className='text-black'>Extra Pax : </b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                            <p><b className='text-black'>INR {extrapersoncost}/- </b></p>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row>
+                                                        <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                                <p><b className='text-black'>Discount: </b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                            <p><b className='text-black'>INR {discvalue}/- </b></p>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row>
+                                                        <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                                <p><b className='text-black'>GST : </b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                            <p><b className='text-black'>INR {isGstChecked ? gstcost : 0.00}/- </b></p>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row>
+                                                            <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                                <p><b className='text-black'>Taxable Amount : </b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                            <p><b className='text-black'>INR {actroomrent}/- </b></p>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row>
+                                                        <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                                <p><b className='text-black'>Balance : </b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                            <p><b className='text-black'>INR {roomrent}/- </b></p>
                                                             </Col>
                                                         </Row>
                                                     </Col>
+                                                </Row>
+                                                <Row>
                                                     <Col xs={24} sm={24} md={3} lg={3} xl={3}>
                                                         <button type="button" className="btn btn-danger rounded-pill" onClick={() => handleCheckout(selectedBooking?.bookingNo)}>
                                                             Checkout
