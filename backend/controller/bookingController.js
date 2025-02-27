@@ -160,6 +160,39 @@ exports.newBooking = async (req, res, next) => {
     }
 };
 
+exports.editBooking = async (req, res, next) => {
+    const { bookingId } = req.params; // Booking ID from request params
+    const updatedBookingData = req.body; // Updated booking details
+
+    try {
+        // Find the existing booking
+        const existingBooking = await bookingModel.findOne({ bookingId });
+
+        if (!existingBooking) {
+            return res.status(404).json({ success: false, message: "Booking not found!" });
+        }
+
+        // Update the booking with new values
+        Object.assign(existingBooking, updatedBookingData);
+        await existingBooking.save();
+
+        // Log the update action
+        await logsModel.create({
+            userid: updatedBookingData.staffid,
+            action: 'Edit Booking',
+            actionat: new Date().toISOString(),
+            hotelid: existingBooking.hotelid,
+            bookingid: bookingNo
+        });
+
+        res.json({ success: true, message: "Booking updated successfully!" });
+    } catch (err) {
+        console.error("Error updating booking:", err);
+        res.status(500).json({ message: err.message });
+    }
+};
+
+
 exports.shiftRoom = async (req, res, next) => {
     try {
       const { oldBookingId, newRoomNumber } = req.body;
