@@ -88,7 +88,7 @@ exports.newBooking = async (req, res, next) => {
                                         <tr>
                                             <td style="padding: 10px; border: 1px solid #ddd;border-right: none;">
                                                 <p>Check-in</p>
-                                                <p><b>Date : </b> ${new Date(bookingData.checkin_Booking).toLocaleDateString()}</p>
+                                                <p><b>Date : </b> ${new Date(bookingData.checkin_Booking).toLocaleDateString('en-GB')}</p>
                                                 <p><b>Time : </b> ${new Date(bookingData.checkin_Booking).toLocaleTimeString()}</p>
                                             </td>
                                             <td style="padding: 10px; border: 1px solid #ddd;text-align: right;border-left: none;">
@@ -266,12 +266,12 @@ exports.sendRmail = async (req, res, next) => {
                                         <tr>
                                             <td style="padding: 10px; border: 1px solid #ddd;border-right: none;">
                                                 <p>Check-In</p>
-                                                <p><b>Date : </b> ${new Date(bookingData.checkin_Booking).toLocaleDateString()}</p>
+                                                <p><b>Date : </b> ${new Date(bookingData.checkin_Booking).toLocaleDateString('en-GB')}</p>
                                                 <p><b>Time : </b> ${new Date(bookingData.checkin_Booking).toLocaleTimeString()}</p>
                                             </td>
                                             <td style="padding: 10px; border: 1px solid #ddd;text-align: right;border-left: none;">
                                                 <p>Check-Out</p>
-                                                <p><b>Date : </b> ${new Date(bookingData.checkout).toLocaleDateString()}</p>
+                                                <p><b>Date : </b> ${new Date(bookingData.checkout).toLocaleDateString('en-GB')}</p>
                                                 <p><b>Time : </b> ${new Date(bookingData.checkout).toLocaleTimeString()}</p>
                                             </td>
                                         </tr>
