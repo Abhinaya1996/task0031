@@ -1,11 +1,13 @@
 const express = require('express');
-const { newBooking, getAllBookings, getInhouseBookings, getHotelBookings, getSingleBookings, updateBookingDetails, sendRmail, updCheckout, getGuesthistory, getLogsByDate, getRoomAvailability, updateBookingReserveDetails, getReports, getRoomWiseSales, getcheckinoutReports } = require('../controller/bookingController');
+const { newBooking, getAllBookings, getInhouseBookings, getHotelBookings, getSingleBookings, updateBookingDetails, sendRmail, updCheckout, getGuesthistory, getLogsByDate, getRoomAvailability, updateBookingReserveDetails, getReports, getRoomWiseSales, getcheckinoutReports, shiftRoom } = require('../controller/bookingController');
 const ensureAuthenticated = require('../middleware/userAuth');
 const router = express.Router();
 
 router.route('/send-mail').post(ensureAuthenticated,sendRmail);
 router.route('/checkout').post(ensureAuthenticated,updCheckout);
 router.route('/new-booking').post(ensureAuthenticated,newBooking);
+router.route('/edit-booking').put(ensureAuthenticated,newBooking);
+router.route('/shift-room').post(ensureAuthenticated,shiftRoom);
 router.route('/update-booking').put(ensureAuthenticated,updateBookingDetails);
 router.route('/update-booking-reserve').put(updateBookingReserveDetails);
 router.route('/bookings').get(ensureAuthenticated,getAllBookings);
