@@ -581,6 +581,7 @@ exports.getInhouseBookings = async (req, res, next) => {
 };
 
 
+
 exports.getGuesthistory = async (req, res, next) => {
     try {
         const { hotelid } = req.query;
