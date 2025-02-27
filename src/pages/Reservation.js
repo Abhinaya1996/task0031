@@ -1109,7 +1109,7 @@ export default function Reservation({selectedHotel}){
                                             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
                                                 <Row>
                                                     <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                                                        <p className="fs-18 fw-semibold text-warning pt-3">Notes</p>
+                                                        <p className="fs-18 fw-semibold text-warning pt-3">Remarks</p>
                                                     </Col>
                                                 </Row>
 
