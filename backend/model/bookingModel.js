@@ -17,9 +17,9 @@ const bookingSchema = new mongoose.Schema({
     extrapersondays: Number,
     guestDetails:[
         {
+            guestTitle:String,
             name:String,
-            phone:Number,
-            altphone: Number
+            phone:Number
         }
     ],
     roomType: String,
