@@ -100,7 +100,8 @@ export default function GuestHistory({selectedHotel}){
                                             <table className="table table-traffic mb-0">
                                                 <thead>
                                                     <tr>
-                                                        <th className="border-top-0 fw-semibold text-black">Bk.No</th>
+                                                        <th className="border-top-0 fw-semibold text-black">S.No</th>
+                                                        <th className="border-top-0 fw-semibold text-black">B.No</th>
                                                         <th className="border-top-0 fw-semibold text-black">Name</th>
                                                         <th className="border-top-0 fw-semibold text-black">Room No</th>
                                                         <th className="border-top-0 fw-semibold text-black">Room Type</th>
@@ -115,6 +116,7 @@ export default function GuestHistory({selectedHotel}){
                                                 <tbody>
                                                     {bookings.map((booking) => (
                                                     <tr key={booking.bookingNo}>
+                                                        <td>{index+1}</td>
                                                         <td>{booking.bookingNo}</td>
                                                         <td>{booking.personName || 'N/A'}</td>
                                                         <td>{booking.roomNumbers}</td>
