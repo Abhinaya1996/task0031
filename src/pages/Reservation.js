@@ -949,7 +949,7 @@ export default function Reservation({selectedHotel}){
                                                 </select>
                                             </Col>
                                             <Col xs={16} sm={16} md={5} lg={5} xl={5} className="pe-2 pt-2">
-                                                <input type="text" className="form-control" name="personName" onChange={handleChange} value={bookingDetails?.personName || ''} placeholder="Booking Person Name" autoComplete="off" />
+                                                <input type="text" className="form-control" name="personName" onChange={handleChange} value={bookingDetails?.personName || ''} placeholder="Guest Name" autoComplete="off" />
                                             </Col>
                                             <Col xs={12} sm={12} md={2} lg={2} xl={2} className="pe-2 pt-2">
                                             <select name="extnmob" className="form-control" onChange={handleChange}>
