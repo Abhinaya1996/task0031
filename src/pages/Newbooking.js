@@ -3,6 +3,8 @@ import '../assets/css/app.min.css';
 import '../assets/css/icons.min.css';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import InputMask from 'react-input-mask';
 import { Col, Row } from 'antd';
 import axios from "axios";
@@ -37,7 +39,11 @@ export default function Newbooking({selectedHotel}){
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState(''); 
     const navigate = useNavigate();
-
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const bookingId = queryParams.get("bookingId");
+    const [isEditMode, setIsEditMode] = useState(!!bookingId);
+    console.log(bookingId);
     const countryCodes = [
         {"country":"Afghanistan","code":"93","iso":"AF"},
         {"country":"Albania","code":"355","iso":"AL"},
@@ -320,6 +326,48 @@ export default function Newbooking({selectedHotel}){
         payment_Reserve: [],
         bookingnotes: ""
     });
+
+    useEffect(() => {
+        if (bookingId) {
+            setIsEditMode(true);
+            fetchBookingDetails(bookingId);
+        }
+    }, [bookingId]);
+
+    const fetchBookingDetails = async (id) => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/book/single-booking?bookingId=${id}`, {
+                headers: { Authorization: localStorage.getItem("token") },
+            });
+    
+            if (response.data.success && response.data.booking.length > 0) {
+                setFormData(response.data.booking[0]);
+
+                setBaseRoomRent(response.data.booking[0].payment_Booking[0].roomrent);
+                setExtraValue(response.data.booking[0].payment_Booking[0].extra);
+                setDiscvalue(response.data.booking[0].payment_Booking[0].discamt);
+                
+                if(response.data.booking[0].payment_Booking[0].gst === 0){
+                    setIsGstChecked(false);
+                }else{
+                    setIsGstChecked(true);
+                    setGstcost(response.data.booking[0].payment_Booking[0].gst);
+                }
+                if(response.extrapersoncharge > 0 && response.extrapersoncharge !== 'NULL'){
+                    setExtrapersoncost(response.extrapersoncharge);
+                }
+                setRoomrent(response.data.booking[0].payment_Booking[0].amountDue);
+                
+                setActRoomrent(response.data.booking[0].payment_Booking[0].total);
+            } else {
+                alert("Booking not found");
+            }
+        } catch (error) {
+            console.error("Error fetching booking:", error);
+            alert("Error loading booking details");
+        }
+    };
+    
     
 
     const handleClose = () => {
@@ -727,88 +775,88 @@ export default function Newbooking({selectedHotel}){
       };
     
 
-    const handleSubmit = async (e) => {
+      const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (isSubmitting) return; // Prevent multiple clicks
         setIsSubmitting(true);
 
+        // Validation
         if (!formData.source || formData.source.trim() === "") {
             alert("Please select a source");
             return;
-          }
+        }
 
         if (!formData.personName || formData.personName.trim() === "") {
             alert("Booking Person Name is required");
             return;
         }
 
-        if (!formData.mobile || formData.mobile.trim() === "") {
-            alert("Booking Person Phone Number is required");
-            return;
-        }
-      
+        // if (!formData.mobile || formData.mobile.trim() === "") {
+        //     alert("Booking Person Phone Number is required");
+        //     return;
+        // }
+
         if (!formData.email || formData.email.trim() === "") {
-          alert("Email is required");
-          return;
-        }
-      
-        if (!selectedBedtype || selectedBedtype.trim() === "") {
-          alert("Please select Bed Type");
-          return;
+            alert("Email is required");
+            return;
         }
 
         if (!formData.roomType || formData.roomType.trim() === "") {
             alert("Room Type is required");
             return;
-          }
-        
-          if (isEmptyCheckinDate()) {
+        }
+
+        if (!formData.checkin_Booking) {
             alert("Check-in Date is required");
             return;
-          }
-      
-        // Check if address field is empty.
-        if (!formData.address || formData.address.trim() === "") {
-          alert("Address is required");
-          return;
         }
-      
-        // Update payment_Booking details.
+
+        if (!formData.address || formData.address.trim() === "") {
+            alert("Address is required");
+            return;
+        }
+
+        // Update payment_Booking details
         const updatedPaymentBooking = formData.payment_Booking.map((payment) => ({
-          ...payment,
-          amountDue: payment.amountDue === 0 ? payment.total : payment.amountDue,
+            ...payment,
+            amountDue: payment.amountDue === 0 ? payment.total : payment.amountDue,
         }));
-      
-        // Update formData with updated payment_Booking array.
+
         const updatedFormData = {
-          ...formData,
-          payment_Booking: updatedPaymentBooking,
+            ...formData,
+            payment_Booking: updatedPaymentBooking,
         };
-      
+
         try {
-          const url = `${process.env.REACT_APP_API_BASE_URL}/api/book/new-booking`;
-          const headers = {
-            Authorization: localStorage.getItem("token"),
-          };
-          const response = await axios.post(url, updatedFormData, { headers });
-          if (response.data.success) {
-            setModalMessage("Booking successfully created");
-            setTimeout(() => {
-              navigate("/booking");
-            }, 2000);
-          } else {
-            setModalMessage("Failed to create booking");
-          }
-      
-          setShowModal(true);
+            const headers = { Authorization: localStorage.getItem("token") };
+
+            let response;
+            if (isEditMode) {
+                // **Edit Mode: Update Booking**
+                response = await axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/book/edit-booking/${bookingId}`, updatedFormData, { headers });
+            } else {
+                // **New Mode: Create Booking**
+                response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/book/new-booking`, updatedFormData, { headers });
+            }
+
+            if (response.data.success) {
+                const successMessage = isEditMode ? "Booking successfully updated" : "Booking successfully created";
+                setModalMessage(successMessage);
+                setShowModal(true);
+                setTimeout(() => {
+                navigate("/booking");
+                }, 5000);
+            } else {
+                alert("Failed to save booking");
+            }
         } catch (error) {
-          console.error("Error submitting booking:", error);
-          alert("An error occurred");
+            console.error("Error submitting booking:", error);
+            alert("An error occurred");
         } finally {
         setIsSubmitting(false); // Re-enable button
-        }
-      };      
+    }
+    };     
 
     return <>
             <div className="content-page">
@@ -984,6 +1032,7 @@ export default function Newbooking({selectedHotel}){
                                                         showTime={{ use12Hours: false, minuteStep: 15 }} // 24-hour format with 15-minute steps
                                                         format="DD-MM-YYYY HH:mm" // Ensures the correct display format
                                                         placeholder="Select Date & Time"
+                                                        value={formData.checkin_Booking ? dayjs(formData.checkin_Booking) : null}
                                                         onChange={handleCheckindate}
                                                         className="form-control"
                                                     />
@@ -1011,7 +1060,7 @@ export default function Newbooking({selectedHotel}){
                                             <Col xs={24} sm={24} md={24} lg={24} xl={24} className="pe-2">
                                                 <Row>
                                                     <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                                                        <p className="fs-18 fw-semibold text-blue pt-3">Remarks</p>
+                                                        <p className="fs-18 fw-semibold text-blue pt-3">Notes</p>
                                                     </Col>
                                                 </Row>
 
@@ -1037,7 +1086,7 @@ export default function Newbooking({selectedHotel}){
                                                         <p className="fs-18 fw-semibold text-blue pt-3">Extra</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={12} lg={12} xl={12} >
-                                                        <input type="text" name="bokingpayment" onChange={handleExtraChange} className="form-control mt-2" placeholder="00.00" autoComplete="off"/>
+                                                        <input type="text" name="bokingpayment" onChange={handleExtraChange} value={formData?.payment_Booking?.[0]?.extra || ""} className="form-control mt-2" placeholder="00.00" autoComplete="off"/>
                                                     </Col>
                                                 </Row>
                                                 <Row>
@@ -1045,7 +1094,7 @@ export default function Newbooking({selectedHotel}){
                                                     <p className="fs-18 fw-semibold text-blue pt-2">Disc % ({discvalue})</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={12} lg={12} xl={12} >
-                                                        <input type="text" name="discper" onChange={handleDiscChange} className="form-control mt-2" placeholder="00.00" autoComplete="off"/>
+                                                        <input type="text" name="discper" onChange={handleDiscChange} value={formData?.payment_Booking?.[0]?.discper || ""} className="form-control mt-2" placeholder="00.00" autoComplete="off"/>
                                                     </Col>
                                                 </Row>
                                                 <Row>
@@ -1062,7 +1111,7 @@ export default function Newbooking({selectedHotel}){
                                                         <p className="fs-18 fw-semibold text-blue pt-3">Booking Payment</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={12} lg={12} xl={12} >
-                                                        <input type="text" name="bokingpayment" onChange={handlePaymentChange} className="form-control mt-3" placeholder="Booking Payment" autoComplete="off"/>
+                                                        <input type="text" name="bokingpayment" onChange={handlePaymentChange} value={formData?.payment_Booking?.[0]?.amountPaid || ""} className="form-control mt-3" placeholder="Booking Payment" autoComplete="off"/>
                                                     </Col>
                                                 </Row>
                                                 <Row>
@@ -1149,7 +1198,7 @@ export default function Newbooking({selectedHotel}){
                                     </Col>
 
                                     <Col xs={24} sm={24} md={4} lg={4} xl={4}>
-                                        <button className="btn btn-warning d-flex" style={{float:'right', marginTop:'50%'}} type="submit"> Submit </button>
+                                        <button className="btn btn-warning d-flex" style={{float:'right', marginTop:'50%'}} type="submit" disabled={isSubmitting}> {isSubmitting ? "Processing..." : "Submit"} </button>
                                     </Col>
                                 </Row>
                                 
