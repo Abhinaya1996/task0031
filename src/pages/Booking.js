@@ -62,7 +62,7 @@ export default function Booking({selectedHotel, selectedDate}){
                 selector: (row) => new Date(row.checkin_Booking).toLocaleDateString('en-GB', { timeZone: 'UTC' }), 
                 sortable: true 
             },
-            { name: "Total", selector: (row) => row.payment_Booking[0]?.total || "0", sortable: true },
+            { name: "Total", selector: (row) => 'INR '+ row.payment_Booking[0]?.total || "0", sortable: true },
             { 
                 name: "Paid", 
                 selector: (row) => row.payment_Booking[0]?.amountPaid || "0", 
