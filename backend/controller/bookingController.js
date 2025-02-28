@@ -161,12 +161,16 @@ exports.newBooking = async (req, res, next) => {
 };
 
 exports.editBooking = async (req, res, next) => {
-    const { bookingId } = req.params; // Booking ID from request params
+    const bookingId = req.params.bookingId; // Extract from params
+    if (!bookingId) {
+        return res.status(400).json({ success: false, message: "Booking ID is missing" });
+    } // Booking ID from request params
     const updatedBookingData = req.body; // Updated booking details
 
     try {
         // Find the existing booking
-        const existingBooking = await bookingModel.findOne({ bookingId });
+        const existingBooking = await bookingModel.findById(bookingId);
+
 
         if (!existingBooking) {
             return res.status(404).json({ success: false, message: "Booking not found!" });
@@ -182,7 +186,7 @@ exports.editBooking = async (req, res, next) => {
             action: 'Edit Booking',
             actionat: new Date().toISOString(),
             hotelid: existingBooking.hotelid,
-            bookingid: bookingNo
+            bookingid: bookingId
         });
 
         res.json({ success: true, message: "Booking updated successfully!" });
@@ -191,7 +195,6 @@ exports.editBooking = async (req, res, next) => {
         res.status(500).json({ message: err.message });
     }
 };
-
 
 exports.shiftRoom = async (req, res, next) => {
     try {
