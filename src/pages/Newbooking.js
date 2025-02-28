@@ -1116,7 +1116,7 @@ export default function Newbooking({selectedHotel}){
                                                 </Row>
                                                 <Row>
                                                     <Col xs={24} sm={24} md={8} lg={8} xl={8} >
-                                                        <p className="fs-18 fw-semibold text-blue pt-3">Payment Mode</p>
+                                                        <p className="fs-18 fw-semibold text-blue pt-3">Mode of Payment</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={12} lg={12} xl={12} >
                                                         <div className="col-sm-11 d-flex gap-4 mt-3 mb-3">
@@ -1138,6 +1138,12 @@ export default function Newbooking({selectedHotel}){
                                                                     Cash
                                                                 </label>
                                                             </div>
+                                                            <div className="form-check disabled">
+                                                                    <input className="form-check-input" type="radio" name="gridRadios" onChange={handlePaymentmodeChange} id="gridRadios3" value="Baash"/>
+                                                                    <label className="form-check-label" htmlFor="gridRadios3">
+                                                                        BAASH
+                                                                    </label>
+                                                                </div>
                                                         </div>
                                                     </Col>
                                                 </Row>
@@ -1170,6 +1176,14 @@ export default function Newbooking({selectedHotel}){
                                                     </Col>
                                                 </Row>
                                                 <Row>
+                                                    <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                        <p className="fs-18 fw-semibold text-blue pt-2">Taxable Amount : </p>
+                                                    </Col>
+                                                    <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                        <p className="fs-18 fw-semibold text-black pt-2">INR {actroomrent}/- </p>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
                                                 <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                         <p className="fs-18 fw-semibold text-blue pt-1">GST :</p>
                                                     </Col>
@@ -1179,7 +1193,7 @@ export default function Newbooking({selectedHotel}){
                                                 </Row>
                                                 <Row>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                        <p className="fs-18 fw-semibold text-blue pt-2">Taxable Amount : </p>
+                                                        <p className="fs-18 fw-semibold text-blue pt-2">Payable Amount : </p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                         <p className="fs-18 fw-semibold text-black pt-2">INR {actroomrent}/- </p>
