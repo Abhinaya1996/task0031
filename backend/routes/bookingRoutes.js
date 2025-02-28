@@ -6,7 +6,7 @@ const router = express.Router();
 router.route('/send-mail').post(ensureAuthenticated,sendRmail);
 router.route('/checkout').post(ensureAuthenticated,updCheckout);
 router.route('/new-booking').post(ensureAuthenticated,newBooking);
-router.route('/edit-booking').put(ensureAuthenticated,newBooking);
+router.route('/edit-booking/:bookingId').put(ensureAuthenticated, editBooking);
 router.route('/shift-room').post(ensureAuthenticated,shiftRoom);
 router.route('/update-booking').put(ensureAuthenticated,updateBookingDetails);
 router.route('/update-booking-reserve').put(updateBookingReserveDetails);
