@@ -32,6 +32,7 @@ export default function Newbooking({selectedHotel}){
     const [bookingadvance, setBookingadvance] = useState(0);
 
     const [isGstChecked, setIsGstChecked] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState(''); 
@@ -729,6 +730,9 @@ export default function Newbooking({selectedHotel}){
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (isSubmitting) return; // Prevent multiple clicks
+        setIsSubmitting(true);
+
         if (!formData.source || formData.source.trim() === "") {
             alert("Please select a source");
             return;
@@ -801,6 +805,8 @@ export default function Newbooking({selectedHotel}){
         } catch (error) {
           console.error("Error submitting booking:", error);
           alert("An error occurred");
+        } finally {
+        setIsSubmitting(false); // Re-enable button
         }
       };      
 
