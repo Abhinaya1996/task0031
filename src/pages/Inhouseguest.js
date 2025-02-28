@@ -420,7 +420,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                 { 
                     name: "Reg. Card", 
                     cell: (row) => (
-                        <button 
+                        <button style={{padding:'8px'}}
                             className={row.checkOutStatus ? "btn btn-danger rounded-pill" : "btn btn-primary rounded-pill"}
                             onClick={() => handleShow(row)}
                         >
@@ -431,7 +431,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                 { 
                     name: "Payment", 
                     cell: (row) => (
-                        <button className="btn btn-warning rounded-pill" onClick={() => handlePriceShow(row)}>
+                        <button className="btn btn-warning rounded-pill" style={{padding:'8px'}} onClick={() => handlePriceShow(row)}>
                             Update
                         </button>
                     ) 
@@ -439,7 +439,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                 { 
                     name: "Update", 
                     cell: (row) => (
-                        <button className="btn btn-danger rounded-pill" onClick={() => handleCheckoutShow(row)}>
+                        <button className="btn btn-danger rounded-pill" style={{padding:'8px'}} onClick={() => handleCheckoutShow(row)}>
                             Checkout
                         </button>
                     ) 
