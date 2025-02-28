@@ -9,6 +9,7 @@ import '../assets/css/icons.min.css';
 import moment from 'moment';
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
+import DataTable from "react-data-table-component";
 
 export default function Inhouseguest({selectedHotel, selectedDate}){
   const [showModal, setShowModal] = useState(false);
@@ -38,6 +39,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
   const [gstcost, setGstcost] = useState('0.00');
   const [actroomrent, setActRoomrent] = useState(0);
   const [roomrent, setRoomrent] = useState(0);
+  const [numberOfDays, setNumberOfDays] = useState(1);
 
     const [formData, setFormData] = useState({
         checkout: "",
@@ -62,9 +64,24 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
             console.error("Selected date is undefined");
             return;
         }
-        console.log("Selected Date:", dateString); // Debugging
-        setCheckoutDate(dateString); // Assuming you have a state to store the date
+    
+        setCheckoutDate(dateString);
+    
+        if (selectedBooking?.checkin_Booking) {
+            const checkinDate = dayjs(selectedBooking.checkin_Booking);
+            const checkoutDate = dayjs(dateString, "DD-MM-YYYY HH:mm");
+    
+            // Calculate total hours stayed
+            const totalHours = checkoutDate.diff(checkinDate, 'hour');
+    
+            // Convert hours to days with a minimum of 1 day
+            const numberOfDays = Math.ceil(totalHours / 24) || 1;
+    
+            setNumberOfDays(numberOfDays);
+            setActRoomrent(numberOfDays * selectedBooking.payment_Reserve[0]?.total);
+        }
     };
+      
     
 
     const fetchBookings = async () => {
@@ -128,8 +145,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
     
         const now = dayjs(); // Get the current date & time
     
-        setCheckoutDate(now.format("DD-MM-YYYY HH:mm")); // Store both date & time in one state
-
+        setCheckoutDate(now.format("DD-MM-YYYY HH:mm"));
         setBaseRoomRent(booking.payment_Reserve[0]?.roomrent ?? 0);
         setExtraValue(booking.payment_Reserve[0]?.extra ?? 0);
         setExtrapersoncost(booking?.extrapersoncharge ?? 0);
@@ -139,6 +155,12 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
         setGstcost(booking.payment_Reserve[0]?.gst ?? 0);
         setActRoomrent(booking.payment_Reserve[0]?.total ?? 0);
         setRoomrent(booking.payment_Reserve[0]?.amountDue ?? 0);
+
+        const checkinDate = booking?.checkin_Booking ? dayjs(booking.checkin_Booking) : now;
+        const checkoutDate = now;
+        const numberOfDays = checkoutDate.diff(checkinDate, 'day') || 1; // Minimum 1 day stay
+        setNumberOfDays(numberOfDays);
+        setActRoomrent(numberOfDays*booking.payment_Reserve[0]?.total);
 
     
         setShowCheckoutModal(true);
@@ -268,8 +290,23 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
       };   
 
     const handleDiscChange = (e) => {
-        const discvalper = e.target.value;
-        let discamtt = Number(actroomrent)*(Number(discvalper)/100);
+        const discPercentage = parseFloat(e.target.value) || 0;
+        const discDecimal = Number(discPercentage) / 100;
+
+        let newRoomRent_woDisc = Math.round(((Number(baseRoomRent) + Number(extrapersoncost) + Number(extraValue))));
+        const discamount = Math.round(Number(newRoomRent_woDisc)*Number(discDecimal));
+
+        let newRoomRent = Math.round(((Number(baseRoomRent) + Number(extrapersoncost) + Number(extraValue)) - Number(discamount)));
+        let calsgst = Math.round(((Number(baseRoomRent) + Number(extrapersoncost) + Number(extraValue)) - Number(discamount)) * 0.12);
+        setDiscvalue(discamount);
+        setGstcost(calsgst);
+
+        if (isGstChecked) {
+          newRoomRent = Number(newRoomRent)+Number(calsgst);
+        }
+        
+        setActRoomrent(newRoomRent);
+        setRoomrent(newRoomRent);
 
       };
 
@@ -313,7 +350,118 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
             
         }
         
+            const columns = [
+                { name: "S.No", selector: (row, index) => index + 1, sortable: true },
+                { name: "B.No", selector: (row) => row.bookingNo, sortable: true },
+                { name: "Name", selector: (row) => row.personName || "N/A", sortable: true },
+                { name: "Room No", selector: (row) => row.roomNumbers, sortable: true },
+                { 
+                    name: "Check In", 
+                    selector: (row) => new Date(row.checkin_Reserve).toLocaleDateString(), 
+                    sortable: true 
+                },
+                { 
+                    name: "Check Out", 
+                    selector: (row) => row.checkout ? new Date(row.checkout).toLocaleDateString() : "-", 
+                    sortable: true 
+                },
+                { 
+                    name: "Total", 
+                    selector: (row) => {
+                        const checkinDate = new Date(row.checkin_Reserve);
+                        const checkoutDate = row.checkout ? new Date(row.checkout) : new Date();
+                        const numDays = Math.max(1, Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24)));
+                        const perDayCharge = Number(row.payment_Reserve[0]?.total || 0);
+                        return 'INR ' + numDays * perDayCharge + '/-';
+                    }, 
+                    sortable: true 
+                },
+                { 
+                    name: "Advance", 
+                    selector: (row) => row.checkout ? row.payment_Reserve.amountPaid : "-", 
+                    sortable: true 
+                },
+                { 
+                    name: "Outstanding", 
+                    selector: (row) => {
+                        const checkinDate = new Date(row.checkin_Reserve);
+                        const checkoutDate = row.checkout ? new Date(row.checkout) : new Date();
+                        const numDays = Math.max(1, Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24)));
+                        const perDayCharge = Number(row.payment_Reserve[0]?.total || 0);
+                        const expectedTotal = numDays * perDayCharge;
+        
+                        const totalPaidFromReserve = row.payment_Reserve?.reduce((sum, payment) => sum + Number(payment.amountPaid || 0), 0) || 0;
+                        const amountPaidFromBooking = row.payment_Booking?.reduce((sum, payment) => sum + Number(payment.amountPaid || 0), 0) || 0;
+                        const totalAmountPaid = totalPaidFromReserve + amountPaidFromBooking;
+        
+                        return 'INR ' + expectedTotal - totalAmountPaid + '/-';
+                    },
+                    sortable: true,
+                    cell: (row) => {
+                        const checkinDate = new Date(row.checkin_Reserve);
+                        const checkoutDate = row.checkout ? new Date(row.checkout) : new Date();
+                        const numDays = Math.max(1, Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24)));
+                        const perDayCharge = Number(row.payment_Reserve[0]?.total || 0);
+                        const expectedTotal = numDays * perDayCharge;
+        
+                        const totalPaidFromReserve = row.payment_Reserve?.reduce((sum, payment) => sum + Number(payment.amountPaid || 0), 0) || 0;
+                        const amountPaidFromBooking = row.payment_Booking?.reduce((sum, payment) => sum + Number(payment.amountPaid || 0), 0) || 0;
+                        const totalAmountPaid = totalPaidFromReserve + amountPaidFromBooking;
+        
+                        const outstanding = expectedTotal - totalAmountPaid;
+        
+                        return (
+                            <span style={{ color: outstanding < 0 ? 'green' : 'red', fontWeight: '800' }}>
+                                {'INR ' +outstanding + '/-'}
+                            </span>
+                        );
+                    }
+                },
+                { 
+                    name: "Reg. Card", 
+                    cell: (row) => (
+                        <button 
+                            className={row.checkOutStatus ? "btn btn-danger rounded-pill" : "btn btn-primary rounded-pill"}
+                            onClick={() => handleShow(row)}
+                        >
+                            {row.checkOutStatus ? "Completed" : "View"}
+                        </button>
+                    )
+                },
+                { 
+                    name: "Payment", 
+                    cell: (row) => (
+                        <button className="btn btn-warning rounded-pill" onClick={() => handlePriceShow(row)}>
+                            Update
+                        </button>
+                    ) 
+                },
+                { 
+                    name: "Update", 
+                    cell: (row) => (
+                        <button className="btn btn-danger rounded-pill" onClick={() => handleCheckoutShow(row)}>
+                            Checkout
+                        </button>
+                    ) 
+                }
+            ];
 
+            const customStyles = {
+                headCells: {
+                    style: {
+                        fontSize: '16px', // Increase header font size
+                        fontWeight: 'bold',
+                        backgroundColor: '#f8f9fa', // Light background for headers
+                        color: '#000',
+                    },
+                },
+                cells: {
+                    style: {
+                        fontSize: '14px', // Increase cell font size
+                        padding: '10px',  // Add padding for better spacing
+                    },
+                },
+            };
 
 
     return <>
@@ -326,78 +474,16 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                 <div className="card-body">
                                     <h4 className="pb-3">Today Check Out</h4>
                                         <div className="table-responsive">
-                                            <table className="table table-traffic mb-0">
-                                                <thead>
-                                                    <tr>
-                                                        <th className="border-top-0 fw-semibold text-black">S.No</th>
-                                                        <th className="border-top-0 fw-semibold text-black">B.No</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Name</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Room No</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Check In</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Check Out</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Total</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Outstanding</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Status</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Pricing</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Action</th>
-                                                        {/* <th className="border-top-0 fw-semibold text-black">-</th> */}
-                                                    </tr>
-                                                </thead>
-
-                                                <tbody>
-    {bookings.map((booking, index) => {
-        const checkinDate = new Date(booking.checkin_Reserve);
-        const checkoutDate = booking.checkout ? new Date(booking.checkout) : new Date(); // Use today if no checkout date
-
-        // Calculate number of days
-        const numDays = Math.max(1, Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24)));
-
-        // Get per day charge
-        const perDayCharge = Number(booking.payment_Reserve[0]?.total || 0);
-
-        // Calculate total expected amount
-        const expectedTotal = numDays * perDayCharge;
-
-        // Sum all `amountPaid` from `payment_Reserve`
-        const totalPaidFromReserve = booking.payment_Reserve?.reduce((sum, payment) => sum + Number(payment.amountPaid || 0), 0) || 0;
-
-        // Get `amountPaid` from `payment_Booking`
-        const amountPaidFromBooking = booking.payment_Booking?.reduce((sum, payment) => sum + Number(payment.amountPaid || 0), 0) || 0;
-
-        // Calculate total amount paid
-        const totalAmountPaid = totalPaidFromReserve + amountPaidFromBooking;
-
-        // Calculate outstanding amount (can be negative if overpaid)
-        const outstanding = expectedTotal - totalAmountPaid;
-
-        return (
-            <tr key={booking.bookingNo}>
-                <td>{index + 1}</td>
-                <td>{booking.bookingNo}</td>
-                <td>{booking.personName || 'N/A'}</td>
-                <td>{booking.roomNumbers}</td>
-                <td>{checkinDate.toLocaleDateString()}</td>
-                <td>{booking.checkout ? checkoutDate.toLocaleDateString() : '-'}</td>
-                <td>{expectedTotal}</td>
-                <td style={{ color: outstanding < 0 ? 'green' : 'red', fontWeight:'800'}}>{outstanding}</td> {/* Show negative values in green */}
-                <td onClick={() => handleShow(booking)}>
-                    {booking.checkOutStatus ? 
-                        <p className='btn btn-danger rounded-pill'>Completed</p> : 
-                        <p className="btn btn-primary rounded-pill" style={{ marginBottom: 0 }}>View Details</p>
-                    }
-                </td>
-                <td onClick={() => handlePriceShow(booking)}>
-                    <button className='btn btn-warning rounded-pill'>Price update</button>
-                </td>
-                <td onClick={() => handleCheckoutShow(booking)}>
-                    <button className='btn btn-danger rounded-pill'>Checkout</button>
-                </td>
-            </tr>
-        );
-    })}
-</tbody>
-
-                                            </table>
+                                        <DataTable
+                                            columns={columns}
+                                            data={bookings}
+                                            pagination
+                                            paginationPerPage={25}  // Show 25 rows per page
+                                            paginationRowsPerPageOptions={[25, 50, 100]} // Allow users to choose 25, 50, or 100 rows per page
+                                            highlightOnHover
+                                            responsive
+                                            customStyles={customStyles} 
+                                        />
                                         </div>
 
                                         <Modal size="lg" show={showModal} onHide={handleClose} backdrop="static">
@@ -677,9 +763,9 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                             )}
                                             </Modal.Body>
                                             <Modal.Footer>
-                                            <Button className='btn btn-warning rounded-pill' onClick={() => handleMail(selectedBooking.bookingNo)}>
+                                            {/* <Button className='btn btn-warning rounded-pill' onClick={() => handleMail(selectedBooking.bookingNo)}>
                                                 Send Copy
-                                            </Button>
+                                            </Button> */}
                                             <Button className='btn btn-warning rounded-pill' onClick={handleClose}>
                                                 Print Reciept
                                             </Button>
@@ -694,7 +780,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                             <form>
                                                 <Row className='mb-3'>
                                                     <Col xs={24} sm={24} md={3} lg={3} xl={3}>
-                                                        <p>Amount Due :</p>
+                                                        <p>Outstanding :</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <input
@@ -706,7 +792,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                     </Col>
                                                     <Col xs={24} sm={24} md={3} lg={3} xl={3}></Col>
                                                     <Col xs={24} sm={24} md={3} lg={3} xl={3}>
-                                                        <p>Total Amount :</p>
+                                                        <p>Room Rent :</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <input
@@ -731,7 +817,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                     <Col xs={24} sm={24} md={6} lg={6} xl={6}></Col>
                                                     <Col xs={24} sm={24} md={6} lg={6} xl={6}>
                                                         <button type="button" className="btn btn-primary mt-3" onClick={handlePriceUpdate}>
-                                                            Update Price
+                                                            Update Payment
                                                         </button>
                                                     </Col>
                                                 </Row>
@@ -749,7 +835,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                     <Col xs={24} sm={24} md={3} lg={3} xl={3}>
                                                         <p>Checkin Date :</p>
                                                     </Col>
-                                                    <Col xs={24} sm={24} md={5} lg={5} xl={5}>
+                                                    <Col xs={24} sm={24} md={5} lg={5} xl={5} className='pe-2'>
                                                         <input
                                                             type="text"
                                                             value={new Date(selectedBooking?.checkin_Booking).toLocaleString()}
@@ -757,11 +843,10 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                             className="form-control"
                                                         />
                                                     </Col>
-                                                    <Col xs={24} sm={24} md={3} lg={3} xl={3}></Col>
                                                     <Col xs={24} sm={24} md={3} lg={3} xl={3}>
                                                         <p>Checkout date  :</p>
                                                     </Col>
-                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+                                                    <Col xs={24} sm={24} md={6} lg={6} xl={6} className='pe-2'>
                                                         <DatePicker
                                                             showTime={{ use12Hours: false, minuteStep: 15 }}
                                                             format="DD-MM-YYYY HH:mm"
@@ -772,6 +857,13 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                             getPopupContainer={(trigger) => trigger.parentNode}
                                                         />
                                                     </Col>
+
+                                                    <Col xs={24} sm={24} md={3} lg={3} xl={3}><p>No of Days  :</p></Col>
+                                                    <Col xs={24} sm={24} md={2} lg={2} xl={2}>
+                                                    <input type='text' className='form-control' value={numberOfDays}/>
+                                                    </Col>
+
+                                                    
                                                 </Row>
                                                 <hr/>
                                                 <Row>
@@ -781,7 +873,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                                 <p><b className='text-black'>Extra :</b></p>
                                                             </Col>
                                                             <Col xs={24} sm={24} md={15} lg={15} xl={15}>
-                                                            <p><input type="text" name="bokingpayment" value={extraValue} onChange={handleExtraChange} className="form-control mt-2" placeholder="00.00" autoComplete="off"/></p>
+                                                            <p><input type="text" readOnly value={extraValue} onChange={handleExtraChange} className="form-control mt-2" placeholder="00.00" autoComplete="off"/></p>
                                                             </Col>
                                                         </Row>
 
@@ -815,7 +907,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
 
                                                         <Row>
                                                             <Col xs={24} sm={24} md={6} lg={6} xl={6}>
-                                                                <p><b className='text-black'>Payment Mode :</b></p>
+                                                                <p><b className='text-black'>Mode of Payment :</b></p>
                                                             </Col>
                                                             <Col xs={24} sm={24} md={12} lg={12} xl={12} >
                                                                 <div className="col-sm-11 d-flex gap-4">
@@ -837,23 +929,18 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                                             Cash
                                                                         </label>
                                                                     </div>
+                                                                    <div className="form-check disabled">
+                                                                        <input className="form-check-input" type="radio" name="gridRadios" onChange={handlePaymentmodeChange} id="gridRadios3" value="Baash"/>
+                                                                        <label className="form-check-label" htmlFor="gridRadios3">
+                                                                            BAASH
+                                                                        </label>
+                                                                    </div>
                                                                 </div>
                                                             </Col>
                                                         </Row>
 
                                                     </Col>
                                                     <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-
-
-                                                        <Row>
-                                                        <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                            <p><b className='text-black'>Base Room Rent : </b></p>
-                                                            </Col>
-                                                            <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                            <p><b className='text-black'>INR {Number(baseRoomRent)}/- </b></p>
-                                                            </Col>
-                                                        </Row>
-
                                                         <Row>
                                                         <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                             <p><b className='text-black'>Room Rent : </b></p>
@@ -879,6 +966,14 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                             </Col>
                                                         </Row>
                                                         <Row>
+                                                            <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                                <p><b className='text-black'>Taxable Amount : </b></p>
+                                                            </Col>
+                                                            <Col xs={24} sm={24} md={11} lg={11} xl={11} >
+                                                            <p><b className='text-black'>INR {actroomrent}/- </b></p>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row>
                                                         <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                                 <p><b className='text-black'>GST : </b></p>
                                                             </Col>
@@ -888,7 +983,7 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                         </Row>
                                                         <Row>
                                                             <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                                <p><b className='text-black'>Taxable Amount : </b></p>
+                                                                <p><b className='text-black'>Payable Amount : </b></p>
                                                             </Col>
                                                             <Col xs={24} sm={24} md={11} lg={11} xl={11} >
                                                             <p><b className='text-black'>INR {actroomrent}/- </b></p>
@@ -913,6 +1008,14 @@ export default function Inhouseguest({selectedHotel, selectedDate}){
                                                 </Row>
                                             </form>
                                             </Modal.Body>
+                                            <Modal.Footer>
+                                            <Button className='btn btn-warning rounded-pill'>
+                                                Send Invoice
+                                            </Button>
+                                            <Button className='btn btn-warning rounded-pill'>
+                                                Print Invoice
+                                            </Button>
+                                            </Modal.Footer>
                                         </Modal>
                                 </div>
                             </div>
