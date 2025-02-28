@@ -95,6 +95,22 @@ export default function Booking({selectedHotel, selectedDate}){
                     </a>
                 ) 
             },
+                { 
+                name: "Edit", 
+                cell: (row) => (
+                    <a className="btn btn-danger rounded-pill d-flex">
+                        Cancel
+                    </a>
+                ) 
+            },
+            { 
+                name: "Edit", 
+                cell: (row) => (
+                    <a className="btn btn-primary rounded-pill d-flex" >
+                        No Show
+                    </a>
+                ) 
+            },
         ];
         const customStyles = {
             headCells: {
