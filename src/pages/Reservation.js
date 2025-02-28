@@ -1327,7 +1327,7 @@ export default function Reservation({selectedHotel}){
                                                 </Row>
                                                 <Row>
                                                     <Col xs={24} sm={24} md={8} lg={8} xl={8} >
-                                                        <p className="fs-18 fw-semibold text-warning pt-3">Payment Mode</p>
+                                                        <p className="fs-18 fw-semibold text-warning pt-3">Mode of Payment</p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={12} lg={12} xl={12} >
                                                         <div className="col-sm-11 d-flex gap-4 mt-3 mb-3">
@@ -1347,6 +1347,12 @@ export default function Reservation({selectedHotel}){
                                                                 <input className="form-check-input" type="radio" name="gridRadios" onChange={handlePaymentmodeChange} id="gridRadios3" value="Cash"/>
                                                                 <label className="form-check-label" htmlFor="gridRadios3">
                                                                     Cash
+                                                                </label>
+                                                            </div>
+                                                            <div className="form-check disabled">
+                                                                <input className="form-check-input" type="radio" name="gridRadios" onChange={handlePaymentmodeChange} id="gridRadios3" value="Baash"/>
+                                                                <label className="form-check-label" htmlFor="gridRadios3">
+                                                                    BAASH
                                                                 </label>
                                                             </div>
                                                         </div>
