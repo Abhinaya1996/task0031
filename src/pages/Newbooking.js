@@ -1180,7 +1180,7 @@ export default function Newbooking({selectedHotel}){
                                                         <p className="fs-18 fw-semibold text-blue pt-2">Taxable Amount : </p>
                                                     </Col>
                                                     <Col xs={24} sm={24} md={11} lg={11} xl={11} >
-                                                        <p className="fs-18 fw-semibold text-black pt-2">INR {actroomrent}/- </p>
+                                                        <p className="fs-18 fw-semibold text-black pt-2">INR {actroomrent - (isGstChecked ? gstcost : 0)}/-  </p>
                                                     </Col>
                                                 </Row>
                                                 <Row>
