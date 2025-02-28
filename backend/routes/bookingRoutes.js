@@ -1,5 +1,5 @@
 const express = require('express');
-const { newBooking, getAllBookings, getInhouseBookings, getHotelBookings, getSingleBookings, updateBookingDetails, sendRmail, updCheckout, getGuesthistory, getLogsByDate, getRoomAvailability, updateBookingReserveDetails, getReports, getRoomWiseSales, getcheckinoutReports, shiftRoom } = require('../controller/bookingController');
+const { newBooking, getAllBookings, getInhouseBookings, getHotelBookings, getSingleBookings, updateBookingDetails, sendRmail, updCheckout, getGuesthistory, getLogsByDate, getRoomAvailability, updateBookingReserveDetails, getReports, getRoomWiseSales, getcheckinoutReports, shiftRoom, editBooking } = require('../controller/bookingController');
 const ensureAuthenticated = require('../middleware/userAuth');
 const router = express.Router();
 
