@@ -73,6 +73,7 @@ export default function Booking({selectedHotel, selectedDate}){
                                                         <th className="border-top-0 fw-semibold text-black">Amount Paid</th>
                                                         <th className="border-top-0 fw-semibold text-black">Outstanding</th>
                                                         <th className="border-top-0 fw-semibold text-black">Action</th>
+                                                        <th className="border-top-0 fw-semibold text-black">Edit</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className='text-center'>
@@ -93,6 +94,16 @@ export default function Booking({selectedHotel, selectedDate}){
                                                                 Check-In
                                                             </a>
                                                         </td>
+
+                                                        <td>
+                                                        <a className="btn btn-secondary rounded-pill d-flex"
+                                                        href={`/new-booking?bookingId=${booking._id}`}
+                                                        type="submit">
+                                                        Edit
+                                                        </a>
+
+                                                        </td>
+                                                        
                                                     </tr>
                                                     ))}
                                                 </tbody>
