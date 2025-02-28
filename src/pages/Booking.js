@@ -4,6 +4,7 @@ import '../assets/css/app.min.css';
 import '../assets/css/icons.min.css';
 import { useAuth } from '../context/AuthContext';
 import {useNavigate} from 'react-router-dom';
+import DataTable from "react-data-table-component";
 const moment = require('moment');
 
 export default function Booking({selectedHotel, selectedDate}){
@@ -51,6 +52,67 @@ export default function Booking({selectedHotel, selectedDate}){
         }
     }, [selectedDate, selectedHotel]); 
 
+        const columns = [
+            { name: "S.No", selector: (row, index) => index + 1, sortable: true },
+            { name: "B.No", selector: (row) => row.bookingNo, sortable: true },
+            { name: "Name", selector: (row) => row.personName || "N/A", sortable: true },
+            { name: "Bed Type", selector: (row) => row.bedType, sortable: true },
+            { 
+                name: "Check In", 
+                selector: (row) => new Date(row.checkin_Booking).toLocaleDateString('en-GB', { timeZone: 'UTC' }), 
+                sortable: true 
+            },
+            { name: "Total", selector: (row) => row.payment_Booking[0]?.total || "0", sortable: true },
+            { 
+                name: "Paid", 
+                selector: (row) => row.payment_Booking[0]?.amountPaid || "0", 
+                sortable: true,
+                cell: (row) => <span className="text-success fw-bold">{'INR ' + row.payment_Booking[0]?.amountPaid || "0"}</span>
+            },
+            { 
+                name: "Outstanding", 
+                selector: (row) => Number(row.payment_Booking[0]?.total || 0) - Number(row.payment_Booking[0]?.amountPaid || 0), 
+                sortable: true,
+                cell: (row) => (
+                    <span className="text-danger fw-bolder">
+                        {Number(row.payment_Booking[0]?.total || 0) - Number(row.payment_Booking[0]?.amountPaid || 0)}
+                    </span>
+                )
+            },
+            { 
+                name: "Action", 
+                cell: (row) => (
+                    <a className="btn btn-secondary rounded-pill d-flex" href={`/reservation?bk=${row._id}`} type="submit">
+                        Check-In
+                    </a>
+                ) 
+            },
+            { 
+                name: "Edit", 
+                cell: (row) => (
+                    <a className="btn btn-secondary rounded-pill d-flex" href={`/new-booking?bookingId=${row._id}`} type="submit">
+                        Edit
+                    </a>
+                ) 
+            },
+        ];
+        const customStyles = {
+            headCells: {
+                style: {
+                    fontSize: '16px', // Increase header font size
+                    fontWeight: 'bold',
+                    backgroundColor: '#f8f9fa', // Light background for headers
+                    color: '#000',
+                },
+            },
+            cells: {
+                style: {
+                    fontSize: '14px', // Increase cell font size
+                    padding: '10px',  // Add padding for better spacing
+                },
+            },
+        };
+
     return <>
 
             <div className="content-page">
@@ -60,54 +122,17 @@ export default function Booking({selectedHotel, selectedDate}){
                             <div className="card" style={{borderRadius:'30px'}}>
                                 <div className="card-body">
                                     <h4 className="pb-3">Bookings</h4>
-                                <div className="table-responsive">
-                                            <table className="table table-traffic mb-0">
-                                                <thead className='text-center'>
-                                                    <tr>
-                                                        <th className="border-top-0 fw-semibold text-black">S.No</th>
-                                                        <th className="border-top-0 fw-semibold text-black">B.No</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Name</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Bed Type</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Check In</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Total Amount</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Amount Paid</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Outstanding</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Action</th>
-                                                        <th className="border-top-0 fw-semibold text-black">Edit</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className='text-center'>
-                                                    {bookings.map((booking,index) => (
-                                                    <tr key={booking.bookingNo}>
-                                                        <td>{index+1}</td>
-                                                        <td>{booking.bookingNo}</td>
-                                                        <td>{booking.personName || 'N/A'}</td>
-                                                        <td>{booking.bedType}</td>
-                                                        <td>{new Date(booking.checkin_Booking).toLocaleDateString('en-GB', {timeZone: 'UTC'})}</td>
-                                                        <td>{booking.payment_Booking[0]?.total || '0'}</td>
-                                                        <td className='text-success fw-bold'>{booking.payment_Booking[0]?.amountPaid || '0'}</td>
-                                                        <td className='text-danger fw-bolder'>{Number(booking.payment_Booking[0]?.total || 0)-Number(booking.payment_Booking[0]?.amountPaid || 0)}</td>
-                                                        <td>
-                                                            <a className="btn btn-secondary rounded-pill d-flex"
-                                                                href={`${`/reservation?bk=${booking._id}`}`}
-                                                                type="submit">
-                                                                Check-In
-                                                            </a>
-                                                        </td>
-
-                                                        <td>
-                                                        <a className="btn btn-secondary rounded-pill d-flex"
-                                                        href={`/new-booking?bookingId=${booking._id}`}
-                                                        type="submit">
-                                                        Edit
-                                                        </a>
-
-                                                        </td>
-                                                        
-                                                    </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
+                                        <div className="table-responsive">
+                                        <DataTable
+                                            columns={columns}
+                                            data={bookings}
+                                            pagination
+                                            paginationPerPage={25}  // Show 25 rows per page
+                                            paginationRowsPerPageOptions={[25, 50, 100]} // Allow users to choose 25, 50, or 100 rows per page
+                                            highlightOnHover
+                                            responsive
+                                            customStyles={customStyles} 
+                                        />
                                         </div>
                                 </div>
                             </div>
